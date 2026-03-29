@@ -35,7 +35,7 @@ export const login = async (
             password
         )
     } catch (error) {
-        console.error("login error:", error)
+        console.error("login error: ", error)
         throw error
     }
 }

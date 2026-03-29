@@ -12,8 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { login } from "@/appwrite/auth";
-import { getCurrentUser } from "@/appwrite/auth";
+import { getCurrentUser, login } from "@/appwrite/auth";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
 
@@ -22,6 +21,14 @@ interface LoginForm {
   email: string;
   password: string;
 }
+
+const authInputClassName =
+  "h-11 rounded-xl border-border bg-background px-3.5 text-sm shadow-none focus-visible:border-violet-500 focus-visible:ring-violet-500/20 dark:border-border dark:bg-background";
+
+const authDoubleIconInputClassName = `${authInputClassName} pl-10 pr-10`;
+const authSingleIconInputClassName = `${authInputClassName} pl-10`;
+const oauthButtonClassName =
+  "h-11 flex-1 rounded-xl border-border bg-background px-4 text-foreground hover:border-violet-500 hover:bg-background dark:border-border dark:bg-background dark:hover:bg-background";
 
 function LoginPage() {
   // State for show/hide password
@@ -61,7 +68,7 @@ function LoginPage() {
 
   return (
     // Full screen container — flex row
-    <div className="flex h-screen">
+    <div className="flex min-h-screen">
       {/* ===== LEFT SIDE ===== */}
       <div
         className="hidden lg:flex w-1/2 relative overflow-hidden
@@ -140,28 +147,16 @@ function LoginPage() {
 
           {/* OAuth Buttons */}
           <div className="flex gap-3 mb-6">
-            <Button
-              variant="outline"
-              className="flex-1 border-border hover:border-violet-500"
-              type="button"
-            >
+            <Button variant="outline" className={oauthButtonClassName} type="button">
               <img
                 src="https://www.google.com/favicon.ico"
-                className="w-4 h-4 mr-2"
+                className="mr-2 size-4"
                 alt="Google"
               />
               Google
             </Button>
-            <Button
-              variant="outline"
-              className="flex-1 border-border hover:border-violet-500"
-              type="button"
-            >
-              <svg
-                className="w-4 h-4 mr-2"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
+            <Button variant="outline" className={oauthButtonClassName} type="button">
+              <svg className="mr-2 size-4" viewBox="0 0 24 24" fill="currentColor">
                 <path
                   d="M12 0C5.37 0 0 5.37 0 12c0 5.31
                                 3.435 9.795 8.205 11.385.6.105.825-.255.825
@@ -218,8 +213,7 @@ function LoginPage() {
                 <Input
                   type="email"
                   placeholder="alex@example.com"
-                  className="pl-10 bg-background border-border
-                                               focus:border-violet-500"
+                  className={authSingleIconInputClassName}
                   {...register("email", {
                     required: "Email is required",
                     pattern: {
@@ -261,8 +255,7 @@ function LoginPage() {
                 <Input
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className="pl-10 pr-10 bg-background
-                                               border-border focus:border-violet-500"
+                  className={authDoubleIconInputClassName}
                   {...register("password", {
                     required: "Password is required",
                     minLength: {
