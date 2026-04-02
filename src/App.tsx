@@ -12,6 +12,7 @@ import ForgotPassword from "@/pages/auth/ForgotPassword";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import TodosPage from "@/pages/todos/TodosPage";
 import ArticlesPage from "@/pages/articles/ArticlesPage";
+import Pricing from "./pages/pricing/Pricing";
 
 function App() {
   const setUser = useAuthStore((state) => state.setUser);
@@ -67,6 +68,39 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/todos" element={<TodosPage />} />
         <Route path="/articles" element={<ArticlesPage />} />
+        // Add these inside the protected routes section
+        <Route
+          path="/todos/completed"
+          element={<div className="text-foreground">Completed Todos</div>}
+        />
+        <Route
+          path="/todos/pending"
+          element={<div className="text-foreground">Pending Todos</div>}
+        />
+        <Route
+          path="/todos/create"
+          element={<div className="text-foreground">Create Todo</div>}
+        />
+        <Route
+          path="/articles/create"
+          element={<div className="text-foreground">Create Article</div>}
+        />
+        <Route
+          path="/analytics"
+          element={<div className="text-foreground">Analytics</div>}
+        />
+        <Route
+          path="/profile"
+          element={<div className="text-foreground">Profile</div>}
+        />
+        <Route
+          path="/settings"
+          element={<div className="text-foreground">Settings</div>}
+        />
+        <Route
+          path="/pricing"
+          element={<div className="text-foreground">Pricing:<Pricing/> </div>}
+        />
       </Route>
 
       {/* Default redirects */}

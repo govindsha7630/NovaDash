@@ -1,29 +1,26 @@
+// src/components/layout/AppShell.tsx
 import { Outlet } from "react-router-dom"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
+import AppSidebar from "@/components/AppSidebar"
+import Navbar from "@/pages/navbar/Navbar"
 
 function AppShell() {
     return (
-        <div className="flex h-screen bg-background">
-
-            {/* Sidebar — we build this later */}
-            <aside className="w-60 bg-sidebar border-r border-border">
-                <p className="p-4 text-muted-foreground">Sidebar</p>
-            </aside>
-
-            {/* Main content area */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-
-                {/* Navbar — we build this later */}
-                <header className="h-16 border-b border-border flex items-center px-6">
-                    <p className="text-muted-foreground">Navbar</p>
+        <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+                {/* Navbar */}
+                <header className="h-16 border-b border-border
+                                   bg-background sticky top-0 z-50">
+                    <Navbar />
                 </header>
 
                 {/* Page content */}
-                <main className="flex-1 overflow-auto p-6">
+                <main className="flex-1 overflow-auto p-6 bg-background">
                     <Outlet />
                 </main>
-
-            </div>
-        </div>
+            </SidebarInset>
+        </SidebarProvider>
     )
 }
 

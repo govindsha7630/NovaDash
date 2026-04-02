@@ -163,6 +163,15 @@
   --radius-2xl: calc(var(--radius) * 1.8);
 }
 
+/* ===== SIDEBAR COLLAPSED FIXES ===== */
+
+
+/* 4. Hide upgrade card */
+.peer[data-collapsible="icon"] .upgrade-card {
+  display: none !important;
+}
+
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
