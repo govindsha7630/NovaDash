@@ -37,6 +37,7 @@
 
   --radius: 0.625rem;
 
+  /* ===== SIDEBAR LIGHT MODE ===== */
   --sidebar: #F0F2FF;
   --sidebar-foreground: #0D0F1A;
   --sidebar-primary: #7C5CFC;
@@ -45,6 +46,19 @@
   --sidebar-accent-foreground: #0D0F1A;
   --sidebar-border: #E2E5F0;
   --sidebar-ring: #7C5CFC;
+
+  /* ===== SIDEBAR SPECIFIC COLORS (LIGHT) ===== */
+  --sidebar-fg: #0D0F1A;
+  --sidebar-fg-muted: #5A6280;
+  --sidebar-icon-active: #7C5CFC;
+  --sidebar-icon-hover: #6B4EE8;
+  --sidebar-icon-muted: #5A6280;
+  --sidebar-bg-hover: rgba(124, 92, 252, 0.06);
+  --sidebar-bg-active: rgba(124, 92, 252, 0.1);
+  --sidebar-border-active: rgba(124, 92, 252, 0.2);
+  --sidebar-border-default: transparent;
+  --sidebar-nav-border: rgba(124, 92, 252, 0.15);
+  --sidebar-section-divider: rgba(124, 92, 252, 0.2);
 
   --success: #10B981;
   --warning: #F59E0B;
@@ -91,6 +105,7 @@
   --input: #1E2740;
   --ring: #7C5CFC;
 
+  /* ===== SIDEBAR DARK MODE ===== */
   --sidebar: #0B0E1A;
   --sidebar-foreground: #EDF2FF;
   --sidebar-primary: #7C5CFC;
@@ -99,6 +114,19 @@
   --sidebar-accent-foreground: #EDF2FF;
   --sidebar-border: #1E2740;
   --sidebar-ring: #7C5CFC;
+
+  /* ===== SIDEBAR SPECIFIC COLORS (DARK) ===== */
+  --sidebar-fg: #EDF2FF;
+  --sidebar-fg-muted: #8B9ABB;
+  --sidebar-icon-active: #a78bfa;
+  --sidebar-icon-hover: #c4b5fd;
+  --sidebar-icon-muted: #8B9ABB;
+  --sidebar-bg-hover: rgba(255, 255, 255, 0.06);
+  --sidebar-bg-active: linear-gradient(135deg, rgba(124, 92, 252, 0.35), rgba(34, 211, 238, 0.15));
+  --sidebar-border-active: rgba(124, 92, 252, 0.3);
+  --sidebar-border-default: transparent;
+  --sidebar-nav-border: rgba(124, 92, 252, 0.2);
+  --sidebar-section-divider: rgba(124, 92, 252, 0.2);
 
   --success: #10B981;
   --warning: #F59E0B;

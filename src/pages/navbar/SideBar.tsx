@@ -76,7 +76,7 @@ function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       {/* HEADER */}
-      <SidebarHeader className="border-b border-border">
+      <SidebarHeader className="border-b border-border ">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="lg" tooltip="NovaDash">

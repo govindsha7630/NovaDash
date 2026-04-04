@@ -37,8 +37,6 @@ function Navbar() {
 
             {/* LEFT — Sidebar trigger + Logo */}
             <div className="flex items-center gap-3">
-                {/* Shadcn sidebar toggle button */}
-                {/* <SidebarTrigger /> */}
 
                 <Link to="/dashboard" className="flex items-center gap-2">
                   
