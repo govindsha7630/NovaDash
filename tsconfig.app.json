@@ -22,9 +22,10 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
-
-    ,
+    // base url error
+    "noUncheckedSideEffectImports": true,
+    "ignoreDeprecations": "6.0",
+    // base url error
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

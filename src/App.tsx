@@ -60,7 +60,7 @@ function App() {
       {/* Protected routes */}
       <Route
         element={
-          <ProtectedRoute requireAuth={true}>
+          <ProtectedRoute requireAuth={false}>
             <AppShell />
           </ProtectedRoute>
         }
