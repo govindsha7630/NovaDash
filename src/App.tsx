@@ -13,6 +13,8 @@ import DashboardPage from "@/pages/dashboard/DashboardPage";
 import TodosPage from "@/pages/todos/TodosPage";
 import ArticlesPage from "@/pages/articles/ArticlesPage";
 import Pricing from "./pages/pricing/Pricing";
+import CreateTodoPage from "./pages/todos/CreateTodoPage";
+import CreateArticlePage from "./pages/articles/CreateArticlePage";
 
 function App() {
   const setUser = useAuthStore((state) => state.setUser);
@@ -60,7 +62,7 @@ function App() {
       {/* Protected routes */}
       <Route
         element={
-          <ProtectedRoute requireAuth={false}>
+          <ProtectedRoute requireAuth={true}>
             <AppShell />
           </ProtectedRoute>
         }
@@ -79,11 +81,11 @@ function App() {
         />
         <Route
           path="/todos/create"
-          element={<div className="text-foreground">Create Todo</div>}
+          element={<CreateTodoPage/> }
         />
         <Route
           path="/articles/create"
-          element={<div className="text-foreground">Create Article</div>}
+          element={<CreateArticlePage/>}
         />
         <Route
           path="/analytics"
