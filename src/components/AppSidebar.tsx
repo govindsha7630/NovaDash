@@ -30,22 +30,7 @@ function getInitials(name: string) {
 
 function Avatar({ name }: { name: string }) {
   return (
-    <div
-      style={{
-        width: 32,
-        height: 32,
-        minWidth: 32,
-        borderRadius: 8,
-        background: "linear-gradient(135deg,#7C5CFC,#22D3EE)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: 12,
-        fontWeight: 700,
-        color: "#fff",
-        flexShrink: 0,
-      }}
-    >
+    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet to-cyan flex-shrink-0 text-xs font-bold text-white">
       {getInitials(name)}
     </div>
   );
@@ -75,47 +60,34 @@ function NavItem({ to, icon, label, collapsed, active, tooltip }: NavItemProps) 
   const [hovered, setHovered] = useState(false);
 
   return (
-    <div style={{ position: "relative" }}>
+    <div className="relative">
       <Link
         to={to}
         title={collapsed ? (tooltip ?? label) : undefined}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: collapsed ? 0 : 10,
-          justifyContent: collapsed ? "center" : "flex-start",
-          padding: collapsed ? "9px 0" : "9px 12px",
-          borderRadius: 8,
-          textDecoration: "none",
-          color: active ? "#fff" : "var(--sidebar-fg)",
-          background: active
-            ? "linear-gradient(135deg,rgba(124,92,252,.35),rgba(34,211,238,.15))"
-            : hovered
-            ? "rgba(255,255,255,.06)"
-            : "transparent",
-          border: active ? "1px solid rgba(124,92,252,.3)" : "1px solid transparent",
-          transition: "all .15s",
-          overflow: "hidden",
-          whiteSpace: "nowrap",
-          width: "100%",
-          boxSizing: "border-box",
-        }}
+        className={`
+          flex items-center rounded-lg transition-all duration-150 w-full box-border text-[var(--sidebar-fg)]
+          ${collapsed ? "justify-center py-2 px-0" : "justify-start py-2 px-3 gap-2.5"}
+          ${
+            active
+              ? "bg-[var(--sidebar-bg-active)] border border-[var(--sidebar-border-active)]"
+              : hovered
+              ? "bg-[var(--sidebar-bg-hover)] border border-[var(--sidebar-border-default)]"
+              : "bg-transparent border border-[var(--sidebar-border-default)]"
+          }
+        `}
       >
         <span
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            color: active ? "#a78bfa" : hovered ? "#c4b5fd" : "var(--sidebar-fg-muted)",
-          }}
+          className={`
+            flex items-center justify-center flex-shrink-0
+            ${active ? "text-[var(--sidebar-icon-active)]" : hovered ? "text-[var(--sidebar-icon-hover)]" : "text-[var(--sidebar-icon-muted)]"}
+          `}
         >
           {icon}
         </span>
         {!collapsed && (
-          <span style={{ fontSize: 13, fontWeight: active ? 600 : 400 }}>
+          <span className={`text-sm ${active ? "font-semibold" : "font-normal"}`}>
             {label}
           </span>
         )}
@@ -123,25 +95,7 @@ function NavItem({ to, icon, label, collapsed, active, tooltip }: NavItemProps) 
 
       {/* tooltip when collapsed */}
       {collapsed && hovered && (
-        <div
-          style={{
-            position: "absolute",
-            left: "calc(100% + 10px)",
-            top: "50%",
-            transform: "translateY(-50%)",
-            background: "#1e2740",
-            color: "#edf2ff",
-            fontSize: 12,
-            fontWeight: 500,
-            padding: "5px 10px",
-            borderRadius: 6,
-            pointerEvents: "none",
-            whiteSpace: "nowrap",
-            zIndex: 999,
-            border: "1px solid rgba(124,92,252,.25)",
-            boxShadow: "0 4px 12px rgba(0,0,0,.4)",
-          }}
-        >
+        <div className="absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 bg-sidebar-accent text-sidebar-accent-foreground text-xs font-medium px-2.5 py-1 rounded-md pointer-events-none whitespace-nowrap z-[999] border border-[rgba(124,92,252,0.25)] shadow-lg">
           {tooltip ?? label}
         </div>
       )}
@@ -181,52 +135,37 @@ function CollapsibleNav({
         title={collapsed ? label : undefined}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: collapsed ? 0 : 10,
-          justifyContent: collapsed ? "center" : "flex-start",
-          padding: collapsed ? "9px 0" : "9px 12px",
-          borderRadius: 8,
-          background: active
-            ? "linear-gradient(135deg,rgba(124,92,252,.35),rgba(34,211,238,.15))"
-            : hovered
-            ? "rgba(255,255,255,.06)"
-            : "transparent",
-          border: active ? "1px solid rgba(124,92,252,.3)" : "1px solid transparent",
-          color: active ? "#fff" : "var(--sidebar-fg)",
-          width: "100%",
-          cursor: "pointer",
-          transition: "all .15s",
-          overflow: "hidden",
-          whiteSpace: "nowrap",
-          boxSizing: "border-box",
-        }}
+        className={`
+          flex items-center rounded-lg transition-all duration-150 w-full box-border text-[var(--sidebar-fg)]
+          ${collapsed ? "justify-center py-2 px-0" : "justify-start py-2 px-3 gap-2.5"}
+          ${
+            active
+              ? "bg-[var(--sidebar-bg-active)] border border-[var(--sidebar-border-active)]"
+              : hovered
+              ? "bg-[var(--sidebar-bg-hover)] border border-[var(--sidebar-border-default)]"
+              : "bg-transparent border border-[var(--sidebar-border-default)]"
+          }
+          cursor-pointer overflow-hidden whitespace-nowrap
+        `}
       >
         <span
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            color: active ? "#a78bfa" : hovered ? "#c4b5fd" : "var(--sidebar-fg-muted)",
-          }}
+          className={`
+            flex items-center justify-center flex-shrink-0
+            ${active ? "text-[var(--sidebar-icon-active)]" : hovered ? "text-[var(--sidebar-icon-hover)]" : "text-[var(--sidebar-icon-muted)]"}
+          `}
         >
           {icon}
         </span>
         {!collapsed && (
           <>
-            <span style={{ fontSize: 13, fontWeight: active ? 600 : 400, flex: 1, textAlign: "left" }}>
+            <span className={`text-sm ${active ? "font-semibold" : "font-normal"} flex-1 text-left`}>
               {label}
             </span>
             <ChevronRight
               size={14}
-              style={{
-                flexShrink: 0,
-                transition: "transform .2s",
-                transform: open ? "rotate(90deg)" : "rotate(0deg)",
-                color: "var(--sidebar-fg-muted)",
-              }}
+              className={`flex-shrink-0 text-[var(--sidebar-icon-muted)] transition-transform duration-200 ${
+                open ? "rotate-90" : "rotate-0"
+              }`}
             />
           </>
         )}
@@ -234,18 +173,7 @@ function CollapsibleNav({
 
       {/* submenu — only when sidebar expanded */}
       {!collapsed && open && (
-        <div
-          style={{
-            marginLeft: 20,
-            paddingLeft: 12,
-            borderLeft: "1px solid rgba(124,92,252,.2)",
-            marginTop: 2,
-            marginBottom: 2,
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-          }}
-        >
+        <div className="ml-5 pl-3 border-l border-[var(--sidebar-nav-border)] mt-0.5 mb-0.5 flex flex-col gap-0.5">
           {children}
         </div>
       )}
@@ -273,24 +201,25 @@ function SubItem({
       to={to}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      className={`
+        flex items-center gap-2 px-2 py-1.75 rounded-md text-xs transition-all duration-150
+        ${
+          active
+            ? "bg-[rgba(124,92,252,0.15)] font-semibold text-[var(--sidebar-primary)]"
+            : hovered
+            ? "bg-[var(--sidebar-bg-hover)]"
+            : "bg-transparent"
+        }
+      `}
       style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 8,
-        padding: "7px 8px",
-        borderRadius: 6,
-        textDecoration: "none",
-        fontSize: 12,
-        color: active ? "#fff" : accent ?? "var(--sidebar-fg-muted)",
-        background: active
-          ? "rgba(124,92,252,.2)"
-          : hovered
-          ? "rgba(255,255,255,.05)"
-          : "transparent",
-        transition: "all .15s",
+        color: active 
+          ? "var(--sidebar-primary)" 
+          : accent 
+          ? accent 
+          : "var(--sidebar-icon-muted)",
       }}
     >
-      <span style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+      <span className="flex items-center flex-shrink-0">
         {icon}
       </span>
       {label}
@@ -300,19 +229,9 @@ function SubItem({
 
 /* ─── section label ────────────────────────────────────── */
 function SectionLabel({ label, collapsed }: { label: string; collapsed: boolean }) {
-  if (collapsed) return <div style={{ height: 8 }} />;
+  if (collapsed) return <div className="h-2" />;
   return (
-    <div
-      style={{
-        fontSize: 10,
-        fontWeight: 600,
-        letterSpacing: "0.08em",
-        textTransform: "uppercase",
-        color: "var(--sidebar-fg-muted)",
-        padding: "8px 12px 4px",
-        opacity: 0.6,
-      }}
-    >
+    <div className="text-xs font-semibold uppercase tracking-wider text-[var(--sidebar-icon-muted)] px-3 py-2 pb-1 opacity-60">
       {label}
     </div>
   );
@@ -335,106 +254,46 @@ function AppSidebar() {
 
   return (
     <>
-      {/* inject CSS vars once */}
-      <style>{`
-        :root {
-          --sidebar-fg: #edf2ff;
-          --sidebar-fg-muted: #8b9abb;
-        }
-        .sidebar-scroll::-webkit-scrollbar { width: 0; }
-      `}</style>
-
       <div
+        className="flex flex-col flex-shrink-0 bg-sidebar border-r border-[var(--sidebar-border)] transition-all duration-[220ms] overflow-hidden relative z-10"
         style={{
           width: W,
           minWidth: W,
           height: "100svh",
-          background: "#0b0e1a",
-          borderRight: "1px solid #1e2740",
-          display: "flex",
-          flexDirection: "column",
-          transition: "width .22s cubic-bezier(.4,0,.2,1), min-width .22s cubic-bezier(.4,0,.2,1)",
-          overflow: "hidden",
-          flexShrink: 0,
-          position: "relative",
-          zIndex: 10,
         }}
       >
         {/* ── HEADER / LOGO ── */}
         <button
           onClick={() => setCollapsed((c) => !c)}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: collapsed ? 0 : 10,
-            justifyContent: collapsed ? "center" : "flex-start",
-            padding: collapsed ? "16px 0" : "16px 14px",
-            borderBottom: "1px solid #1e2740",
-            background: "transparent",
-            border: "none",
-            // borderBottom: "1px solid #1e2740",
-            cursor: "pointer",
-            width: "100%",
-            overflow: "hidden",
-            flexShrink: 0,
-          }}
+          className={`
+            flex items-center border-b border-[var(--sidebar-border)] bg-transparent cursor-pointer w-full overflow-hidden flex-shrink-0
+            ${collapsed ? "justify-center py-4 px-0" : "justify-start py-4 px-3.5 gap-2.5"}
+            transition-all duration-150
+          `}
         >
           {/* logo mark */}
-          <div
-            style={{
-              width: 32,
-              height: 32,
-              minWidth: 32,
-              background: "linear-gradient(135deg,#7C5CFC,#5b3fd4)",
-              borderRadius: 8,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
+          <div className="w-8 h-8 min-w-8 bg-gradient-to-br from-violet to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
             <div
-              style={{
-                width: 0,
-                height: 0,
-                borderLeft: "5px solid transparent",
-                borderRight: "5px solid transparent",
-                borderBottom: "9px solid #fff",
-              }}
+              className="border-l-[5px] border-r-[5px] border-b-[9px] border-l-transparent border-r-transparent border-b-white"
             />
           </div>
 
           {!collapsed && (
             <>
-              <span
-                style={{
-                  fontSize: 15,
-                  fontWeight: 700,
-                  color: "#fff",
-                  whiteSpace: "nowrap",
-                  flex: 1,
-                  textAlign: "left",
-                }}
-              >
+              <span className="text-base font-bold text-sidebar-foreground whitespace-nowrap flex-1 text-left">
                 NovaDash
               </span>
-              <PanelLeftClose size={15} style={{ color: "#8b9abb", flexShrink: 0 }} />
+              <PanelLeftClose size={15} className="text-[var(--sidebar-icon-muted)] flex-shrink-0" />
             </>
           )}
         </button>
 
         {/* ── SCROLLABLE CONTENT ── */}
         <div
-          className="sidebar-scroll"
+          className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-2 flex flex-col gap-0.5"
           style={{
-            flex: 1,
-            overflowY: "auto",
-            overflowX: "hidden",
-            padding: collapsed ? "8px 8px" : "8px 8px",
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
+            scrollbarWidth: "none",
           }}
         >
           {/* MAIN */}
@@ -459,20 +318,8 @@ function AppSidebar() {
             <SubItem to="/todos" icon={<ListTodo size={13} />} label="All Todos" active={isActive("/todos")} />
 
             {/* priority mini-section */}
-            <div style={{ padding: "6px 8px 4px" }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 5,
-                  fontSize: 10,
-                  fontWeight: 600,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.07em",
-                  color: "#8b9abb",
-                  marginBottom: 4,
-                }}
-              >
+            <div className="px-2 py-1.5 pb-1">
+              <div className="flex items-center gap-1.25 text-xs font-semibold uppercase tracking-wider text-[var(--sidebar-icon-muted)] mb-1">
                 <Filter size={10} /> Priority
               </div>
               {[
@@ -480,33 +327,40 @@ function AppSidebar() {
                 { label: "Medium Priority", color: "#f59e0b", value: "medium" },
                 { label: "Low Priority", color: "#10b981", value: "low" },
                 { label: "By Date", color: "#22d3ee", value: "date" },
-              ].map((f) => (
-                <Link
-                  key={f.value}
-                  to={f.value === "date" ? "/todos?filter=date" : `/todos?priority=${f.value}`}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 7,
-                    padding: "5px 4px",
-                    borderRadius: 5,
-                    textDecoration: "none",
-                    fontSize: 12,
-                    color: "#8b9abb",
-                  }}
-                >
-                  <span
+              ].map((f) => {
+                const isActivePriority = 
+                  (f.value === "date" && location.search === "?filter=date") ||
+                  (f.value !== "date" && location.search === `?priority=${f.value}`);
+                
+                return (
+                  <Link
+                    key={f.value}
+                    to={f.value === "date" ? "/todos?filter=date" : `/todos?priority=${f.value}`}
+                    className={`
+                      flex items-center gap-1.75 py-1.25 px-2 rounded text-xs no-underline transition-all duration-150
+                      ${
+                        isActivePriority
+                          ? "bg-[var(--sidebar-bg-hover)] font-semibold"
+                          : "font-normal"
+                      }
+                    `}
                     style={{
-                      width: 7,
-                      height: 7,
-                      borderRadius: "50%",
-                      background: f.color,
-                      flexShrink: 0,
+                      color: isActivePriority ? "var(--sidebar-fg)" : "var(--sidebar-icon-muted)",
                     }}
-                  />
-                  {f.label}
-                </Link>
-              ))}
+                  >
+                    <span
+                      className={`w-2 h-2 rounded-full flex-shrink-0 transition-transform duration-150 ${
+                        isActivePriority ? "scale-125" : "scale-100"
+                      }`}
+                      style={{
+                        background: f.color,
+                        boxShadow: isActivePriority ? `0 0 8px ${f.color}40` : "none",
+                      }}
+                    />
+                    {f.label}
+                  </Link>
+                );
+              })}
             </div>
 
             <SubItem to="/todos/completed" icon={<CheckCheck size={13} />} label="Completed" active={isActive("/todos/completed")} />
@@ -536,46 +390,20 @@ function AppSidebar() {
         </div>
 
         {/* ── FOOTER ── */}
-        <div
-          style={{
-            borderTop: "1px solid #1e2740",
-            padding: collapsed ? "10px 8px" : "10px 8px",
-            display: "flex",
-            flexDirection: "column",
-            gap: 8,
-            flexShrink: 0,
-          }}
-        >
+        <div className="border-t border-[var(--sidebar-border)] p-2 flex flex-col gap-2 flex-shrink-0">
           {/* Upgrade card — hidden when collapsed */}
           {!collapsed && (
-            <div
-              style={{
-                borderRadius: 10,
-                padding: "10px 12px",
-                border: "1px solid rgba(124,92,252,.2)",
-                background: "linear-gradient(135deg,rgba(124,92,252,.15),rgba(34,211,238,.08))",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                <Sparkles size={13} style={{ color: "#a78bfa", flexShrink: 0 }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>Upgrade to Pro</span>
+            <div className="rounded-xl p-3 border border-[rgba(124,92,252,0.2)] bg-[linear-gradient(135deg,rgba(124,92,252,0.15),rgba(34,211,238,0.08))]">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Sparkles size={13} className="text-[#a78bfa] flex-shrink-0" />
+                <span className="text-xs font-semibold text-white">Upgrade to Pro</span>
               </div>
-              <p style={{ fontSize: 11, color: "#8b9abb", marginBottom: 8, lineHeight: 1.5 }}>
+              <p className="text-xs text-[var(--sidebar-icon-muted)] mb-2 leading-relaxed">
                 Unlock unlimited todos, articles and analytics.
               </p>
               <Link
                 to="/pricing"
-                style={{
-                  display: "block",
-                  textAlign: "center",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: "#fff",
-                  padding: "6px 0",
-                  borderRadius: 7,
-                  background: "linear-gradient(135deg,#7C5CFC,#22D3EE)",
-                  textDecoration: "none",
-                }}
+                className="block text-center text-xs font-semibold text-white px-0 py-1.5 rounded-lg bg-gradient-to-br from-violet to-cyan no-underline transition-all duration-150 hover:shadow-lg"
               >
                 Upgrade Now
               </Link>
@@ -608,45 +436,20 @@ function UserButton({
       title={collapsed ? name : undefined}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: collapsed ? 0 : 10,
-        justifyContent: collapsed ? "center" : "flex-start",
-        padding: collapsed ? "6px 0" : "6px 8px",
-        borderRadius: 8,
-        textDecoration: "none",
-        background: hovered ? "rgba(255,255,255,.06)" : "transparent",
-        transition: "background .15s",
-        overflow: "hidden",
-        position: "relative",
-      }}
+      className={`
+        flex items-center rounded-lg text-sidebar-foreground no-underline transition-all duration-150 overflow-hidden relative
+        ${collapsed ? "justify-center py-1.5 px-0" : "justify-start py-1.5 px-2 gap-2.5"}
+        ${hovered ? "bg-[var(--sidebar-bg-hover)]" : "bg-transparent"}
+      `}
     >
       <Avatar name={name} />
 
       {!collapsed && (
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div
-            style={{
-              fontSize: 13,
-              fontWeight: 600,
-              color: "#edf2ff",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
+        <div className="min-w-0 flex-1">
+          <div className="text-sm font-semibold text-sidebar-foreground overflow-hidden text-ellipsis whitespace-nowrap">
             {name}
           </div>
-          <div
-            style={{
-              fontSize: 11,
-              color: "#8b9abb",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
+          <div className="text-xs text-[var(--sidebar-icon-muted)] overflow-hidden text-ellipsis whitespace-nowrap">
             {email}
           </div>
         </div>
@@ -654,25 +457,7 @@ function UserButton({
 
       {/* tooltip */}
       {collapsed && hovered && (
-        <div
-          style={{
-            position: "absolute",
-            left: "calc(100% + 10px)",
-            top: "50%",
-            transform: "translateY(-50%)",
-            background: "#1e2740",
-            color: "#edf2ff",
-            fontSize: 12,
-            fontWeight: 500,
-            padding: "5px 10px",
-            borderRadius: 6,
-            pointerEvents: "none",
-            whiteSpace: "nowrap",
-            zIndex: 999,
-            border: "1px solid rgba(124,92,252,.25)",
-            boxShadow: "0 4px 12px rgba(0,0,0,.4)",
-          }}
-        >
+        <div className="absolute left-[calc(100%+10px)] top-1/2 -translate-y-1/2 bg-sidebar-accent text-sidebar-accent-foreground text-xs font-medium px-2.5 py-1 rounded-md pointer-events-none whitespace-nowrap z-[999] border border-[rgba(124,92,252,0.25)] shadow-lg">
           {name}
         </div>
       )}
