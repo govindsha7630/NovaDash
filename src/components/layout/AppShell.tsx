@@ -2,7 +2,7 @@
 import { Outlet } from "react-router-dom"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import AppSidebar from "@/components/AppSidebar"
-import Navbar from "@/pages/navbar/Navbar"
+import Navbar from "@/components/layout/Navbar"
 
 function AppShell() {
     return (

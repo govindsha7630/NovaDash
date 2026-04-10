@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button"
 import { useTodos, useDeleteTodo, useToggleTodo } from "@/hooks/useTodos"
 
 export default function TodosPage() {
@@ -25,12 +26,13 @@ export default function TodosPage() {
                     <span>{todo.title}</span>
 
                     {/* Delete */}
-                    <button
+                    <Button
                         onClick={() => deleteTodo.mutate(todo.$id)}
                         disabled={deleteTodo.isPending}
+                        className="mx-6"
                     >
                         {deleteTodo.isPending ? "Deleting..." : "Delete"}
-                    </button>
+                    </Button>
 
                 </div>
             ))}
