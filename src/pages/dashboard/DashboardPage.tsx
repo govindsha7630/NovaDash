@@ -25,7 +25,8 @@
 //         </div>
 //       </section>
 //       <section className=" gap-8 mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-{/* <StatCard
+{
+  /* <StatCard
   icon={
     <ListTodo
       color="#8764FF"
@@ -35,7 +36,8 @@
   }
   title="Total"
   count={totalTodos}
-  isLoading={isLoading} */}
+  isLoading={isLoading} */
+}
 // />;
 
 //         <FeatureCard
@@ -131,6 +133,7 @@
 
 import { useTodos } from "@/hooks/useTodos";
 import StatCard from "@/pages/dashboard/StatCard";
+import { ListTodo } from "lucide-react";
 
 export default function DashboardPage() {
   const { data: todos, isLoading } = useTodos();
@@ -144,15 +147,21 @@ export default function DashboardPage() {
   // Pass to components as props
   return (
     <div>
+    
       <StatCard
-        title="Completed"
-        count={completedTodos}
+        icon={
+          <ListTodo
+            color="#8764FF"
+            size="52px"
+            className="dark:bg-[#181934] bg-amber-100  rounded-sm p-2"
+          />
+        }
+        title="Total"
+        count={totalTodos}
         isLoading={isLoading}
       />
-      <StatCard title="Pending" count={pendingTodos} isLoading={isLoading} />
-      {recentTodos.map((todo) => (
-        <TodoRow key={todo.$id} todo={todo} />
-      ))}
+      
+      {/* <StatCard title="Pending" count={pendingTodos} isLoading={isLoading} /> */}
     </div>
   );
 }
