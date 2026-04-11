@@ -25,10 +25,10 @@ function StatCard({ title, count, icon, trend, isLoading }: StatCardProps) {
 
     return (
         <Card className="flex-1 px-4 py-4 hover:-translate-y-1 transition-all">
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start justify-between mb-1 ">
                 {icon}
                 {trend !== undefined && (
-                    <div className={`flex items-center gap-1 text-xs font-medium
+                    <div className={`flex items-center gap-1 text-xs font-medium 
                                     ${isPositive ? "text-green-500" : "text-red-500"}`}>
                         {isPositive
                             ? <TrendingUp size={12} />
@@ -38,8 +38,8 @@ function StatCard({ title, count, icon, trend, isLoading }: StatCardProps) {
                     </div>
                 )}
             </div>
-            <p className="text-sm text-muted-foreground mb-1">{title}</p>
-            <p className="text-2xl font-bold text-foreground">{count}</p>
+            <p className="text-lg font-medium text-muted-foreground mb-1    ">{title}</p>
+            <p className="text-2xl font-bold text-foreground ">{count}</p>
         </Card>
     )
 }

@@ -17,7 +17,7 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
 import { useState, useEffect } from "react";
-
+import { useTaskModalStore } from "@/store/taskModalStore";
 /* ─── tiny helpers ─────────────────────────────────────── */
 function getInitials(name: string) {
   return name
@@ -56,7 +56,14 @@ interface CollapsibleNavProps {
 }
 
 /* ─── simple nav item ──────────────────────────────────── */
-function NavItem({ to, icon, label, collapsed, active, tooltip }: NavItemProps) {
+function NavItem({
+  to,
+  icon,
+  label,
+  collapsed,
+  active,
+  tooltip,
+}: NavItemProps) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -73,8 +80,8 @@ function NavItem({ to, icon, label, collapsed, active, tooltip }: NavItemProps) 
             active
               ? "bg-[var(--sidebar-bg-active)] border border-[var(--sidebar-border-active)]"
               : hovered
-              ? "bg-[var(--sidebar-bg-hover)] border border-[var(--sidebar-border-default)]"
-              : "bg-transparent border border-[var(--sidebar-border-default)]"
+                ? "bg-[var(--sidebar-bg-hover)] border border-[var(--sidebar-border-default)]"
+                : "bg-transparent border border-[var(--sidebar-border-default)]"
           }
         `}
       >
@@ -87,7 +94,9 @@ function NavItem({ to, icon, label, collapsed, active, tooltip }: NavItemProps) 
           {icon}
         </span>
         {!collapsed && (
-          <span className={`text-sm ${active ? "font-semibold" : "font-normal"}`}>
+          <span
+            className={`text-sm ${active ? "font-semibold" : "font-normal"}`}
+          >
             {label}
           </span>
         )}
@@ -142,8 +151,8 @@ function CollapsibleNav({
             active
               ? "bg-[var(--sidebar-bg-active)] border border-[var(--sidebar-border-active)]"
               : hovered
-              ? "bg-[var(--sidebar-bg-hover)] border border-[var(--sidebar-border-default)]"
-              : "bg-transparent border border-[var(--sidebar-border-default)]"
+                ? "bg-[var(--sidebar-bg-hover)] border border-[var(--sidebar-border-default)]"
+                : "bg-transparent border border-[var(--sidebar-border-default)]"
           }
           cursor-pointer overflow-hidden whitespace-nowrap
         `}
@@ -158,7 +167,9 @@ function CollapsibleNav({
         </span>
         {!collapsed && (
           <>
-            <span className={`text-sm ${active ? "font-semibold" : "font-normal"} flex-1 text-left`}>
+            <span
+              className={`text-sm ${active ? "font-semibold" : "font-normal"} flex-1 text-left`}
+            >
               {label}
             </span>
             <ChevronRight
@@ -188,17 +199,23 @@ function SubItem({
   label,
   active,
   accent,
+  onClick,
 }: {
-  to: string;
+  to?: string;
   icon: React.ReactNode;
   label: string;
   active: boolean;
   accent?: string;
+  onClick?: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
   return (
     <Link
-      to={to}
+      to={to || "#"}
+      onClick={(e) => {
+        if (!to) e.preventDefault();
+        onClick?.();
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className={`
@@ -207,28 +224,32 @@ function SubItem({
           active
             ? "bg-[rgba(124,92,252,0.15)] font-semibold text-[var(--sidebar-primary)]"
             : hovered
-            ? "bg-[var(--sidebar-bg-hover)]"
-            : "bg-transparent"
+              ? "bg-[var(--sidebar-bg-hover)]"
+              : "bg-transparent"
         }
       `}
       style={{
-        color: active 
-          ? "var(--sidebar-primary)" 
-          : accent 
-          ? accent 
-          : "var(--sidebar-icon-muted)",
+        color: active
+          ? "var(--sidebar-primary)"
+          : accent
+            ? accent
+            : "var(--sidebar-icon-muted)",
       }}
     >
-      <span className="flex items-center flex-shrink-0">
-        {icon}
-      </span>
+      <span className="flex items-center flex-shrink-0">{icon}</span>
       {label}
     </Link>
   );
 }
 
 /* ─── section label ────────────────────────────────────── */
-function SectionLabel({ label, collapsed }: { label: string; collapsed: boolean }) {
+function SectionLabel({
+  label,
+  collapsed,
+}: {
+  label: string;
+  collapsed: boolean;
+}) {
   if (collapsed) return <div className="h-2" />;
   return (
     <div className="text-xs font-semibold uppercase tracking-wider text-[var(--sidebar-icon-muted)] px-3 py-2 pb-1 opacity-60">
@@ -244,7 +265,7 @@ function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-
+  const openModal = useTaskModalStore((state) => state.openModal);
   const [collapsed, setCollapsed] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
@@ -274,9 +295,7 @@ function AppSidebar() {
         >
           {/* logo mark */}
           <div className="w-8 h-8 min-w-8 bg-gradient-to-br from-violet to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
-            <div
-              className="border-l-[5px] border-r-[5px] border-b-[9px] border-l-transparent border-r-transparent border-b-white"
-            />
+            <div className="border-l-[5px] border-r-[5px] border-b-[9px] border-l-transparent border-r-transparent border-b-white" />
           </div>
 
           {!collapsed && (
@@ -284,7 +303,10 @@ function AppSidebar() {
               <span className="text-base font-bold text-sidebar-foreground whitespace-nowrap flex-1 text-left">
                 NovaDash
               </span>
-              <PanelLeftClose size={15} className="text-[var(--sidebar-icon-muted)] flex-shrink-0" />
+              <PanelLeftClose
+                size={15}
+                className="text-[var(--sidebar-icon-muted)] flex-shrink-0"
+              />
             </>
           )}
         </button>
@@ -315,7 +337,12 @@ function AppSidebar() {
             active={startsWith("/todos")}
             onIconClick={() => navigate("/todos")}
           >
-            <SubItem to="/todos" icon={<ListTodo size={13} />} label="All Todos" active={isActive("/todos")} />
+            <SubItem
+              to="/todos"
+              icon={<ListTodo size={13} />}
+              label="All Todos"
+              active={isActive("/todos")}
+            />
 
             {/* priority mini-section */}
             <div className="px-2 py-1.5 pb-1">
@@ -328,14 +355,19 @@ function AppSidebar() {
                 { label: "Low Priority", color: "#10b981", value: "low" },
                 { label: "By Date", color: "#22d3ee", value: "date" },
               ].map((f) => {
-                const isActivePriority = 
+                const isActivePriority =
                   (f.value === "date" && location.search === "?filter=date") ||
-                  (f.value !== "date" && location.search === `?priority=${f.value}`);
-                
+                  (f.value !== "date" &&
+                    location.search === `?priority=${f.value}`);
+
                 return (
                   <Link
                     key={f.value}
-                    to={f.value === "date" ? "/todos?filter=date" : `/todos?priority=${f.value}`}
+                    to={
+                      f.value === "date"
+                        ? "/todos?filter=date"
+                        : `/todos?priority=${f.value}`
+                    }
                     className={`
                       flex items-center gap-1.75 py-1.25 px-2 rounded text-xs no-underline transition-all duration-150
                       ${
@@ -345,7 +377,9 @@ function AppSidebar() {
                       }
                     `}
                     style={{
-                      color: isActivePriority ? "var(--sidebar-fg)" : "var(--sidebar-icon-muted)",
+                      color: isActivePriority
+                        ? "var(--sidebar-fg)"
+                        : "var(--sidebar-icon-muted)",
                     }}
                   >
                     <span
@@ -354,7 +388,9 @@ function AppSidebar() {
                       }`}
                       style={{
                         background: f.color,
-                        boxShadow: isActivePriority ? `0 0 8px ${f.color}40` : "none",
+                        boxShadow: isActivePriority
+                          ? `0 0 8px ${f.color}40`
+                          : "none",
                       }}
                     />
                     {f.label}
@@ -363,9 +399,27 @@ function AppSidebar() {
               })}
             </div>
 
-            <SubItem to="/todos/completed" icon={<CheckCheck size={13} />} label="Completed" active={isActive("/todos/completed")} />
-            <SubItem to="/todos/pending" icon={<Clock size={13} />} label="Pending" active={isActive("/todos/pending")} />
-            <SubItem to="/todos/create" icon={<Plus size={13} />} label="Create Todo" active={isActive("/todos/create")} accent="#a78bfa" />
+            <SubItem
+              to="/todos/completed"
+              icon={<CheckCheck size={13} />}
+              label="Completed"
+              active={isActive("/todos/completed")}
+            />
+            <SubItem
+              to="/todos/pending"
+              icon={<Clock size={13} />}
+              label="Pending"
+              active={isActive("/todos/pending")}
+            />
+            {/* <SubItem to="/todos/create" icon={<Plus size={13} />} label="Create Todo" active={isActive("/todos/create")} accent="#a78bfa" /> */}
+            <SubItem
+              icon={<Plus size={13} />}
+              // to="/todos/create"
+              label="Create Todo/Task"
+              active={false}
+              accent="#a78bfa"
+              onClick={() => openModal()}
+            />
           </CollapsibleNav>
 
           {/* CONTENT */}
@@ -378,15 +432,38 @@ function AppSidebar() {
             active={startsWith("/articles")}
             onIconClick={() => navigate("/articles")}
           >
-            <SubItem to="/articles" icon={<AlignLeft size={13} />} label="All Articles" active={isActive("/articles")} />
-            <SubItem to="/articles/create" icon={<Plus size={13} />} label="Create Article" active={isActive("/articles/create")} accent="#22d3ee" />
+            <SubItem
+              to="/articles"
+              icon={<AlignLeft size={13} />}
+              label="All Articles"
+              active={isActive("/articles")}
+            />
+            <SubItem
+              to="/articles/create"
+              icon={<Plus size={13} />}
+              label="Create Article"
+              active={isActive("/articles/create")}
+              accent="#22d3ee"
+            />
           </CollapsibleNav>
 
           {/* MORE */}
           <SectionLabel label="More" collapsed={collapsed} />
 
-          <NavItem to="/analytics" icon={<BarChart2 size={18} />} label="Analytics" collapsed={collapsed} active={isActive("/analytics")} />
-          <NavItem to="/settings" icon={<Settings size={18} />} label="Settings" collapsed={collapsed} active={isActive("/settings")} />
+          <NavItem
+            to="/analytics"
+            icon={<BarChart2 size={18} />}
+            label="Analytics"
+            collapsed={collapsed}
+            active={isActive("/analytics")}
+          />
+          <NavItem
+            to="/settings"
+            icon={<Settings size={18} />}
+            label="Settings"
+            collapsed={collapsed}
+            active={isActive("/settings")}
+          />
         </div>
 
         {/* ── FOOTER ── */}
@@ -396,7 +473,9 @@ function AppSidebar() {
             <div className="rounded-xl p-3 border border-[rgba(124,92,252,0.2)] bg-[linear-gradient(135deg,rgba(124,92,252,0.15),rgba(34,211,238,0.08))]">
               <div className="flex items-center gap-1.5 mb-1">
                 <Sparkles size={13} className="text-[#a78bfa] flex-shrink-0" />
-                <span className="text-xs font-semibold text-white">Upgrade to Pro</span>
+                <span className="text-xs font-semibold text-white">
+                  Upgrade to Pro
+                </span>
               </div>
               <p className="text-xs text-[var(--sidebar-icon-muted)] mb-2 leading-relaxed">
                 Unlock unlimited todos, articles and analytics.
