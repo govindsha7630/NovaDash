@@ -15,6 +15,7 @@ import ArticlesPage from "@/pages/articles/ArticlesPage";
 import Pricing from "./pages/pricing/Pricing";
 import CreateTodoPage from "./pages/todos/CreateTodoPage";
 import CreateArticlePage from "./pages/articles/CreateArticlePage";
+import TodoDetailPage from "./pages/todos/TodoDetailPage";
 
 function App() {
   const setUser = useAuthStore((state) => state.setUser);
@@ -70,6 +71,8 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/todos" element={<TodosPage />} />
         <Route path="/articles" element={<ArticlesPage />} />
+        // Inside protected routes
+        <Route path="/todos/:id" element={<TodoDetailPage />} />
         // Add these inside the protected routes section
         <Route
           path="/todos/completed"
@@ -79,14 +82,8 @@ function App() {
           path="/todos/pending"
           element={<div className="text-foreground">Pending Todos</div>}
         />
-        <Route
-          path="/todos/create"
-          element={<CreateTodoPage/> }
-        />
-        <Route
-          path="/articles/create"
-          element={<CreateArticlePage/>}
-        />
+        <Route path="/todos/create" element={<CreateTodoPage />} />
+        <Route path="/articles/create" element={<CreateArticlePage />} />
         <Route
           path="/analytics"
           element={<div className="text-foreground">Analytics</div>}
@@ -101,7 +98,12 @@ function App() {
         />
         <Route
           path="/pricing"
-          element={<div className="text-foreground">Pricing:<Pricing/> </div>}
+          element={
+            <div className="text-foreground">
+              {/* Pricing: */}
+              <Pricing />
+            </div>
+          }
         />
       </Route>
 
