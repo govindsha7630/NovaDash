@@ -1,8 +1,8 @@
 // ===== USER =====
 export interface User {
-  $id: string
-  name: string
-  email: string
+  $id: string;
+  name: string;
+  email: string;
 }
 
 // ===== BASE DOCUMENT =====
@@ -11,7 +11,11 @@ export interface BaseDoc {
   $createdAt: string;
   $updatedAt?: string; // optional because not always present
 }
-
+// Add this new interface
+export interface Subtask {
+    title: string
+    completed: boolean
+}
 // ===== TODO =====
 export interface Todo extends BaseDoc {
   title: string;
@@ -21,6 +25,7 @@ export interface Todo extends BaseDoc {
   dueDate?: string;
   userId: string;
   tags?: string[];
+  subtasks?: string;
 }
 
 // ===== ARTICLE =====
