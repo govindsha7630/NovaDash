@@ -24,6 +24,7 @@ export const createTodo = async (data: {
   priority: "high" | "medium" | "low";
   dueDate?: string;
   tags?: string[];
+    subtasks?: string
   userId: string;
 }) => {
   return await tablesDB.createRow({

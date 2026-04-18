@@ -1,3 +1,5 @@
+import type { Subtask } from "@/types";
+
 //utils/formatDate
  function formatDate(date?: string) {
   if (!date) return "No due date";
@@ -83,5 +85,8 @@ function timeAgo(date?: string): string {
 function truncate(str: string, length: number) {
   return str.length > length ? str.slice(0, length) + "..." : str;
 }
-
-export {truncate,capitalize,formatDate,timeAgo,recentTaskTagColor}
+function parseSubtasks(raw?: string): Subtask[] {
+    if (!raw) return []
+    try { return JSON.parse(raw) } catch { return [] }
+}
+export {truncate,capitalize,formatDate,timeAgo,recentTaskTagColor,parseSubtasks}

@@ -58,7 +58,9 @@ function TodoDetailPage() {
       <div className="bg-card border border-border rounded-xl p-6 space-y-4">
         {/* Title */}
         <h1
-          className={`text-2xl font-bold
+          className={`text-2xl font-bold leading-snug wrap-break-word 
+            word-break overflow-wrap-anywhere
+                                hover:text-violet-400 transition-colors pr-1
                     ${
                       todo.completed
                         ? " text-muted-foreground"
