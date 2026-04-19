@@ -72,16 +72,18 @@ function App() {
         <Route path="/todos" element={<TodosPage />} />
         <Route path="/articles" element={<ArticlesPage />} />
         // Inside protected routes
-        <Route path="/todos/:id" element={<TodoDetailPage />} />
-        // Add these inside the protected routes section
-        <Route
+        
+        {/* <Route
           path="/todos/completed"
           element={<div className="text-foreground">Completed Todos</div>}
         />
         <Route
           path="/todos/pending"
           element={<div className="text-foreground">Pending Todos</div>}
-        />
+        /> */}
+
+        <Route path="/todos/:id" element={<TodoDetailPage />} />
+        // Add these inside the protected routes section
         <Route path="/todos/create" element={<CreateTodoPage />} />
         <Route path="/articles/create" element={<CreateArticlePage />} />
         <Route

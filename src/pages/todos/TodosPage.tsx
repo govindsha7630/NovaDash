@@ -27,7 +27,7 @@ export default function TodosPage() {
 
     // ── Filter logic ────────────────────────────────────────────────────────
     const today = new Date().toISOString().split("T")[0]
-
+// console.log('first',today)
     const filteredTodos = todos?.filter((todo) => {
         // URL query params from sidebar filters
         const priorityParam = searchParams.get("priority")
