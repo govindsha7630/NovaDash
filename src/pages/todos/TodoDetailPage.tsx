@@ -5,7 +5,7 @@ import env from "@/appwrite/env";
 import type { Todo } from "@/types";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/components/utils/miniUtils";
+import { capitalize, formatDate } from "@/components/utils/miniUtils";
 
 function TodoDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -75,12 +75,12 @@ function TodoDetailPage() {
           className="text-xs px-2 py-1 rounded-full
                                  bg-violet-500/15 text-violet-400"
         >
-          {todo.priority} priority
+          {capitalize(todo.priority)} Priority
         </span>
 
         {/* Description */}
         {todo.description && (
-          <div className="text-muted-foreground  text-sm leading-relaxed">
+          <div className="text-muted-foreground mt-4 text-sm leading-relaxed">
             {todo.description}
           </div>
         )}
