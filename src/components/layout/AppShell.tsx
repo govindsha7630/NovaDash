@@ -8,17 +8,20 @@ function AppShell() {
     return (
         <SidebarProvider>
             <AppSidebar />
-            <SidebarInset>
-                {/* Navbar */}
-                <header className="h-16 border-b border-border
-                                   bg-background sticky top-0 z-50">
+            <SidebarInset className="flex flex-col overflow-hidden h-screen">
+
+                {/* Navbar — fixed height, never scrolls */}
+                <header className="h-16 flex-shrink-0 border-b border-border
+                                   bg-background z-50">
                     <Navbar />
                 </header>
 
-                {/* Page content */}
-                <main className="flex-1 overflow-auto p-6 bg-background">
+                {/* Page content — fills remaining height, NO overflow here */}
+                {/* Each page controls its own scroll internally */}
+                <main className="p-4 flex-1 min-h-0 overflow-hidden">
                     <Outlet />
                 </main>
+
             </SidebarInset>
         </SidebarProvider>
     )

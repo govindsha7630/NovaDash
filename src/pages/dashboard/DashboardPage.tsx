@@ -52,61 +52,71 @@ function DashboardPage() {
       </section>
       <section className=" gap-8 mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {/* Total Todo/Task */}
-        <StatCard
-          icon={
-            <ListTodo
-              color="#8764FF"
-              size="52px"
-              className="dark:bg-[#181934] bg-amber-100  rounded-sm p-2"
-            />
-          }
-          title="Total"
-          count={totalTodos}
-          isLoading={isLoading}
-          trend={1}
-        />
+        <Link to={"/todos"}>
+          <StatCard
+            icon={
+              <ListTodo
+                color="#8764FF"
+                size="52px"
+                className="dark:bg-[#181934] bg-amber-100  rounded-sm p-2"
+              />
+            }
+            title="Total"
+            count={totalTodos}
+            isLoading={isLoading}
+            trend={1}
+          />
+        </Link>
+
         {/* Completed Todo/Task */}
+        <Link to={"/todos?status=completed"}>
+          <StatCard
+            icon={
+              <CheckCircle
+                color="#35D89D"
+                size="52px"
+                className="dark:bg-[#10262A] bg-amber-100  rounded-sm p-2"
+              />
+            }
+            title="Completed"
+            count={completedTodos}
+            isLoading={isLoading}
+            trend={1}
+          />
+        </Link>
+        {/* Active/Pending Stat Card */}
 
-        <StatCard
-          icon={
-            <CheckCircle
-              color="#35D89D"
-              size="52px"
-              className="dark:bg-[#10262A] bg-amber-100  rounded-sm p-2"
-            />
-          }
-          title="Completed"
-          count={completedTodos}
-          isLoading={isLoading}
-          trend={1}
-        />
-
-        <StatCard
-          icon={
-            <ClipboardClock
-              color="#FBBF24"
-              size="52px"
-              className="dark:bg-[#25231E] bg-amber-100  rounded-sm p-2"
-            />
-          }
-          title="Pending Task"
-          count={pendingTodos}
-          isLoading={isLoading}
-          trend={1}
-        />
-        <StatCard
-          icon={
-            <Text
-              color="#22D3EE"
-              size="52px"
-              className="dark:bg-[#0E2632]   rounded-sm p-2"
-            />
-          }
-          title="Total Articles"
-          count={pendingTodos}
-          isLoading={isLoading}
-          trend={1}
-        />
+        <Link to={"/todos?status=active"}>
+          <StatCard
+            icon={
+              <ClipboardClock
+                color="#FBBF24"
+                size="52px"
+                className="dark:bg-[#25231E] bg-amber-100  rounded-sm p-2"
+              />
+            }
+            title="Pending Task"
+            count={pendingTodos}
+            isLoading={isLoading}
+            trend={1}
+          />
+        </Link>
+        {/* Article Stat Card */}
+        <Link to={"/articles"}>
+          <StatCard
+            icon={
+              <Text
+                color="#22D3EE"
+                size="52px"
+                className="dark:bg-[#0E2632]   rounded-sm p-2"
+              />
+            }
+            title="Total Articles"
+            count={pendingTodos}
+            isLoading={isLoading}
+            trend={1}
+          />
+        </Link>
       </section>
       <section className=" lg:flex  gap-8">
         <div className="lg:w-1/2">
@@ -115,7 +125,7 @@ function DashboardPage() {
               <span className="text-lg font-bold ">Recent Todos</span>
               <span className="text-sm text-primary font-black">
                 <Button variant={"ghost"} className="font-bold">
-                  <Link to={"/todos"} >View All</Link>
+                  <Link to={"/todos"}>View All</Link>
                 </Button>
               </span>
             </div>

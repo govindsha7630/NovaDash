@@ -144,10 +144,18 @@ export function CreateTaskModal() {
 
   // ── Submit ──────────────────────────────────────────────────────────────
  const onSubmit = async (data: TaskFormData) => {
-    const tags = data.tags
-        ? data.tags.split(",").map((t) => t.trim()).filter(Boolean)
-        : []
-
+    // const tags = data.tags
+    //     ? data.tags.split(",").map((t) => t.trim()).filter(Boolean)
+    //     : []
+const tags = data.tags
+  ? [...new Set(
+      data.tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean)
+    )]
+  : [];
+  
     const subtasksJson = data.subtasks.length > 0
         ? JSON.stringify(data.subtasks)
         : undefined

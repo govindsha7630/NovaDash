@@ -7,20 +7,27 @@ import { Toaster } from "@/components/ui/sonner"
 import { CreateTaskModal } from "@/components/CreateTaskModal"  // ✅ ADD
 import "./styles/index.css"
 import App from "./App"
-
+import { MainThemeWrapper } from "./MainThemeWrapper"
 const queryClient = new QueryClient()
-document.documentElement.classList.add("dark")
+
+// document.documentElement.classList.add("dark")
 
 createRoot(document.getElementById("root")!).render(
+    
     <StrictMode>
+        <MainThemeWrapper>
+
         <BrowserRouter>
             <QueryClientProvider client={queryClient}>
                 <TooltipProvider>
+
                     <App />
                     <CreateTaskModal />   {/* ✅ Global — outside all layouts */}
                     <Toaster position="top-right" richColors />
                 </TooltipProvider>
             </QueryClientProvider>
         </BrowserRouter>
+        </MainThemeWrapper>
+
     </StrictMode>
 )

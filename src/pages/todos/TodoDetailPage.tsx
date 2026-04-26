@@ -115,7 +115,7 @@ function TodoDetailPage() {
           <div>
             <p
               className="text-xs text-muted-foreground uppercase
-                                      tracking-wider mb-1"
+                          tracking-wider mb-1"
             >
               Tags
             </p>
