@@ -23,6 +23,12 @@ export function ArticleCategorySelect({ value, onChange }: Props) {
 
       <SelectContent>
         <SelectGroup>
+          <SelectLabel>Normal</SelectLabel>
+
+          <SelectItem value="normal">Normal</SelectItem>
+        </SelectGroup>
+        <SelectSeparator />
+        <SelectGroup>
           <SelectLabel>Tech</SelectLabel>
           <SelectItem value="technology">Technology</SelectItem>
           <SelectItem value="programming">Programming</SelectItem>

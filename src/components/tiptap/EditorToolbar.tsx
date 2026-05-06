@@ -42,12 +42,7 @@ import {
   Undo2,
   Redo2,
 } from "lucide-react";
-import {
-    LinkPopover,
-    ImagePopover,
-    YoutubePopover,
-} from "./PopoverTiptap"
-
+import { LinkPopover, ImagePopover, YoutubePopover } from "./PopoverTiptap";
 
 // ── Divider between button groups ───────────────────────────────────────────
 function Divider() {
@@ -176,33 +171,13 @@ function EditorToolbar({ editor }: { editor: Editor }) {
     }
   }, [editor]);
 
-  // ── YouTube — prompt for URL ────────────────────────────────────────────
-  const addYouTube = useCallback(() => {
-    const url = window.prompt("Paste YouTube URL:");
-    if (url) {
-      editor.chain().focus().setYoutubeVideo({ src: url }).run();
-    }
-  }, [editor]);
 
-  // ── Link — set or unset ─────────────────────────────────────────────────
-  const setLink = useCallback(() => {
-    if (s.isLink) {
-      // If link is active — unset it
-      editor.chain().focus().unsetLink().run();
-      return;
-    }
-    const url = window.prompt("Paste link URL:");
-    if (url) {
-      editor.chain().focus().setLink({ href: url, target: "_blank" }).run();
-    }
-  }, [editor, s.isLink]);
 
   return (
     <div
       className="flex items-center flex-wrap gap-0.5
                        px-3 py-2 border-b border-border
-                       bg-background sticky top-0 z-10
-                       rounded-t-xl"
+                       bg-background sticky top-0 "
     >
       {/* ── GROUP 1: Text formatting ────────────────────────── */}
       <ToolbarButton
@@ -467,27 +442,15 @@ function EditorToolbar({ editor }: { editor: Editor }) {
       <Divider />
 
       {/* ── GROUP 7: Link ───────────────────────────────────── */}
-      {/* <ToolbarButton
-        onClick={setLink}
-        isActive={s.isLink}
-        title={s.isLink ? "Remove link" : "Add link"}
-      >
-        {s.isLink ? <Link2Off size={15} /> : <Link size={15} />}
-      </ToolbarButton> */}
-<LinkPopover editor={editor} isActive={s.isLink} />
+     
+      <LinkPopover editor={editor} isActive={s.isLink} />
 
       <Divider />
 
       {/* ── GROUP 8: Media ──────────────────────────────────── */}
-      {/* <ToolbarButton onClick={addImage} title="Insert image from URL">
-        <ImagePlus size={15} />
-      </ToolbarButton>
 
-      <ToolbarButton onClick={addYouTube} title="Embed YouTube video">
-        <Youtube size={15} />
-      </ToolbarButton> */}
-<ImagePopover editor={editor} />
-<YoutubePopover editor={editor} />
+      <ImagePopover editor={editor} />
+      <YoutubePopover editor={editor} />
       <Divider />
 
       {/* ── GROUP 9: History ────────────────────────────────── */}

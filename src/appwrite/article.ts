@@ -3,7 +3,7 @@ import { ID, Query } from "appwrite";
 import env from "./env";
 import type { Article } from "@/types";
 
-export const fetchArticle = async (userId: string): Promise<Article[]> => {
+export const fetchArticles = async (userId: string): Promise<Article[]> => {
   const response = await tablesDB.listRows({
     databaseId: env.appwriteDatabaseId,
     tableId: env.appwriteCollectionArticles,
@@ -33,7 +33,7 @@ export const createArticle = async (data: {
     rowId: ID.unique(),
     data: {
       ...data,
-      status: "draft",
+      // status: "draft",
     },
   });
 };

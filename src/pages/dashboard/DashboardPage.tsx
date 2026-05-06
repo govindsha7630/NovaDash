@@ -35,7 +35,7 @@ function DashboardPage() {
   const pendingTodos = todos?.filter((t) => !t.completed).length ?? 0;
   const recentTodos = todos?.slice(0, 5) ?? [];
   return (
-    <main className="space-y-4">
+    <main className="h-full overflow-y-auto p-4 space-y-4">
       <section className="flex items-center  justify-between ">
         <div>
           <div className="text-xl font-bold">

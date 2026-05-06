@@ -5,6 +5,7 @@ import { useEditorState } from "@tiptap/react"
 import { Toggle } from "@/components/ui/toggle"
 import { Bold, Italic, Underline, Strikethrough, Link, Link2Off } from "lucide-react"
 import { useCallback } from "react"
+import { LinkPopover } from "./PopoverTiptap"
 
 function BubbleMenuBar({ editor }: { editor: Editor }) {
     const s = useEditorState({
@@ -38,7 +39,8 @@ function BubbleMenuBar({ editor }: { editor: Editor }) {
         >
             {/* ✅ Compact popup — not full width */}
             <div
-                className="flex items-center gap-0.5 p-1
+                className="flex absolute z-50 top-12
+                           items-center gap-0.5 p-1
                            bg-card border border-border
                            rounded-lg shadow-xl shadow-black/20
                            backdrop-blur-sm"
@@ -99,18 +101,9 @@ function BubbleMenuBar({ editor }: { editor: Editor }) {
                 <div className="w-px h-4 bg-border mx-0.5" />
 
                 {/* Link toggle */}
-                <Toggle
-                    pressed={s.isLink}
-                    onPressedChange={setLink}
-                    title={s.isLink ? "Remove link" : "Add link"}
-                    className={`h-7 w-7 p-0 rounded cursor-pointer
-                        ${s.isLink
-                            ? "bg-cyan-600/20 text-cyan-400"
-                            : "text-muted-foreground hover:bg-muted"
-                        }`}
-                >
-                    {s.isLink ? <Link2Off size={13} /> : <Link size={13} />}
-                </Toggle>
+               
+
+                <LinkPopover editor={editor} isActive={s.isLink}/>
             </div>
         </BubbleMenu>
     )

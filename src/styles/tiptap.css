@@ -6,8 +6,8 @@
 /* ── Container ─────────────────────────────── */
 .tiptap-wrapper {
   width: 100%;
-  min-height: 500px;
-  padding: 2rem;
+  /* min-height: 500px; */
+  /* padding: 2rem; */
   overflow-y: auto;
   cursor: text;
 }
@@ -391,4 +391,25 @@
 .drag-handle:active {
   cursor: grabbing;
   background-color: var(--muted);
+}
+
+/* ✅ Editor fills full wrapper height */
+/* .tiptap-wrapper .ProseMirror {
+    min-height: 100%;
+    height: 100%;
+    cursor: text;
+} */
+/* Make wrapper feel like an editor — cursor changes everywhere */
+.tiptap-wrapper {
+    cursor: text;
+}
+
+/* ProseMirror is the actual contenteditable div Tiptap renders */
+/* Make it stretch to fill the wrapper completely */
+.tiptap-wrapper .ProseMirror {
+    min-height: 200px;
+    /* height: 100%;   minimum so short articles feel spacious */
+    padding: 2rem;
+    outline: none;
+    cursor: text;
 }

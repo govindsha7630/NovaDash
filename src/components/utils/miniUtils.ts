@@ -1,7 +1,7 @@
 import type { Subtask } from "@/types";
 
 //utils/formatDate
- function formatDate(date?: string) {
+function formatDate(date?: string) {
   if (!date) return "No due date";
 
   const parsed = new Date(date);
@@ -65,9 +65,8 @@ function timeAgo(date?: string): string {
   return `${diffInYears}y ago`;
 }
 
-
 //utils/priority Classname
- function recentTaskTagColor(priority: string) {
+function recentTaskTagColor(priority: string) {
   if (priority === "high") {
     return "bg-[rgba(255,86,86,0.12)] p-1 rounded-sm text-red-400 text-xs ";
   } else if (priority === "medium") {
@@ -78,7 +77,7 @@ function timeAgo(date?: string): string {
 }
 
 // utils/string.js
- function capitalize(str: string ) {
+function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
@@ -86,7 +85,44 @@ function truncate(str: string, length: number) {
   return str.length > length ? str.slice(0, length) + "..." : str;
 }
 function parseSubtasks(raw?: string): Subtask[] {
-    if (!raw) return []
-    try { return JSON.parse(raw) } catch { return [] }
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
 }
-export {truncate,capitalize,formatDate,timeAgo,recentTaskTagColor,parseSubtasks}
+
+function generateSlug(title: string): string {
+  const baseUrl = "https://novadash.com/articles";
+
+  const slug = title
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "-") // remove special characters
+    .replace(/\s+/g, "-") // replace spaces with -
+    .replace(/-+/g, "-"); // remove duplicate -
+
+  return `${baseUrl}/${slug}`;
+}
+
+function excerptMaker(title:string, id:string):string {
+    const slug = title
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "-")   // remove special characters
+        .replace(/\s+/g, "-")           // replace spaces with -
+        .replace(/-+/g, "-")
+    return `${slug}-${id}`
+}
+
+export {
+  truncate,
+  capitalize,
+  formatDate,
+  timeAgo,
+  recentTaskTagColor,
+  parseSubtasks,
+  generateSlug,
+  excerptMaker
+};

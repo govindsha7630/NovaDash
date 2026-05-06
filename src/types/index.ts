@@ -37,4 +37,27 @@ export interface Article extends BaseDoc {
   status: "published" | "draft" | "archived";
   tags?: string[];
   userId: string;
+  category?: string;
+  isPrivate?: boolean;
+  publishAt?: string;
+}
+
+// ===== ARTICLE FORM =====
+export interface ArticleForm {
+  title: string;
+  content: string; // JSON string from editor
+  excerpt?: string;
+  coverImage?: string;
+  status: "draft" | "published";
+  isPrivate: boolean;
+  publishAt?: string; // datetime string
+  tags?: string[];
+  category: string;
+  // userId: string;
+}
+// ===== ARTICLE PAYLOAD =====
+// What actually gets sent to Appwrite on create/update
+// = ArticleForm fields + userId (injected from authStore at submit time)
+export interface ArticlePayload extends ArticleForm {
+  userId: string;
 }

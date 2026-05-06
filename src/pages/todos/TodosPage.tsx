@@ -205,7 +205,7 @@ export default function TodosPage() {
     return (
         // FIX 5 PART 1: pb-24 on mobile prevents FAB from overlapping last card
         // lg:pb-0 removes the padding on desktop where there is no FAB
-        <div className="space-y-6 pb-24 lg:pb-0">
+        <div className="space-y-6 pb-24 lg:pb-0 h-full overflow-y-auto p-4  ">
 
             {/* Page header */}
             <section className="flex items-start justify-between gap-4 flex-wrap">

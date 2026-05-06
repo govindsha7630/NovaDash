@@ -42,7 +42,7 @@ function TodoDetailPage() {
   if (!todo) return null;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-6 h-full overflow-y-auto p-4 ">
       {/* Back button */}
       <Button
         variant="ghost"
