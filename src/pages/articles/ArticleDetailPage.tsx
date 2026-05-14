@@ -4,6 +4,7 @@ import type { Article } from "@/types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import DOMPurify from "dompurify";
+import '@/styles/tiptap.css'
 
 function ArticleDetailPage() {
   const { slugwithid } = useParams<{ slugwithid: string }>();
@@ -41,12 +42,12 @@ function ArticleDetailPage() {
   if (!article) return null;
 
   return (
-    <div className="h-full p-4 space-y-4 overflow-y-auto">
+    <div className="h-full p-4 space-y-4 overflow-y-auto flex items-center flex-col">
       {`${article.$id},
     
     ${article.title},`}
 
-    <div className="overflow-y-auto " dangerouslySetInnerHTML={{ __html: purify.sanitize(article.content) }} />;
+    <div className=" tiptap border-2 " dangerouslySetInnerHTML={{ __html: purify.sanitize(article.content) }} />;
     </div>
   );
 }

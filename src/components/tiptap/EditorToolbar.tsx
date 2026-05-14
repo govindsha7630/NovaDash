@@ -65,6 +65,7 @@ function ToolbarButton({
 }) {
   return (
     <Toggle
+    
       pressed={isActive}
       onPressedChange={onClick}
       disabled={disabled}
@@ -102,6 +103,7 @@ function HighlightButton({
 
   return (
     <button
+      type="button"
       title={label}
       onClick={() =>
         editor.chain().focus().toggleHighlight({ color: hex }).run()
@@ -170,8 +172,6 @@ function EditorToolbar({ editor }: { editor: Editor }) {
       editor.chain().focus().setImage({ src: url }).run();
     }
   }, [editor]);
-
-
 
   return (
     <div
@@ -253,7 +253,7 @@ function EditorToolbar({ editor }: { editor: Editor }) {
             </span>
           </Toggle>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-36">
+        <DropdownMenuContent  align="start" className="w-36">
           <DropdownMenuLabel className="text-xs">Headings</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {[
@@ -263,6 +263,7 @@ function EditorToolbar({ editor }: { editor: Editor }) {
           ].map(({ level, icon, label }) => (
             <DropdownMenuItem
               key={level}
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() =>
                 editor
                   .chain()
@@ -442,7 +443,7 @@ function EditorToolbar({ editor }: { editor: Editor }) {
       <Divider />
 
       {/* ── GROUP 7: Link ───────────────────────────────────── */}
-     
+
       <LinkPopover editor={editor} isActive={s.isLink} />
 
       <Divider />
