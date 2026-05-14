@@ -106,7 +106,7 @@ function generateSlug(title: string): string {
   return `${baseUrl}/${slug}`;
 }
 
-function excerptMaker(title:string, id:string):string {
+function createSlug(title:string, id:string):string {
     const slug = title
         .trim()
         .toLowerCase()
@@ -124,5 +124,5 @@ export {
   recentTaskTagColor,
   parseSubtasks,
   generateSlug,
-  excerptMaker
+  createSlug
 };

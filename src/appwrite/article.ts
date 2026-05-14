@@ -13,7 +13,7 @@ export const fetchArticles = async (userId: string): Promise<Article[]> => {
       Query.limit(100),
     ],
   });
-  console.log(response)
+  // console.log(response)
   return response.rows as unknown as Article[];
 };
 

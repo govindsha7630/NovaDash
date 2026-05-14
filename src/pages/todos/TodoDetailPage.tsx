@@ -8,13 +8,15 @@ import { Button } from "@/components/ui/button";
 import { capitalize, formatDate } from "@/components/utils/miniUtils";
 
 function TodoDetailPage() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [todo, setTodo] = useState<Todo | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { slugwithid } = useParams<{ slugwithid: string }>();
+  const seperatedId = slugwithid?.split("-").at(-1);
+
+    const navigate = useNavigate();
+    const [todo, setTodo] = useState<Todo | null>(null);
+    const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id) return;
+    if (!slugwithid) return;
 
     const fetchTodo = async () => {
       try {
@@ -23,7 +25,7 @@ function TodoDetailPage() {
         const row = await tablesDB.getRow({
           databaseId: env.appwriteDatabaseId,
           tableId: env.appwriteCollectionTodos,
-          rowId: id,
+          rowId: seperatedId!,
         });
 
         setTodo(row as unknown as Todo);
@@ -36,7 +38,7 @@ function TodoDetailPage() {
     };
 
     fetchTodo();
-  }, [id, navigate]);
+  }, [slugwithid, navigate]);
 
   if (loading) return <p className="text-muted-foreground">Loading...</p>;
   if (!todo) return null;
@@ -48,7 +50,7 @@ function TodoDetailPage() {
         variant="ghost"
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 text-muted-foreground
-                           hover:text-foreground"
+                    hover:text-foreground"
       >
         <ArrowLeft size={16} />
         Back
