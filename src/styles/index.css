@@ -2,8 +2,13 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "./tiptap.css";
+/* In index.css — import a highlight.js theme */
+@import 'highlight.js/styles/github-dark.css';
+
 
 @custom-variant dark (&:is(.dark *));
+
 
 /* ===== LIGHT MODE ===== */
 :root {
@@ -17,6 +22,8 @@
   --popover-foreground: #0D0F1A;
 
   --primary: #7C5CFC;
+  --primary-muted: #CABEFF;
+
   --primary-foreground: #ffffff;
 
   --secondary: #EEF0FF;
@@ -87,6 +94,7 @@
   --popover-foreground: #EDF2FF;
 
   --primary: #7C5CFC;
+  --primary-muted: #CABEFF;
   --primary-foreground: #ffffff;
 
   --secondary: #1E2740;
@@ -109,6 +117,7 @@
   --sidebar: #0B0E1A;
   --sidebar-foreground: #EDF2FF;
   --sidebar-primary: #7C5CFC;
+  --sidebar-primary-muted: #CABEFF;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #1E2740;
   --sidebar-accent-foreground: #EDF2FF;
@@ -154,6 +163,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-muted: var(--primary-muted);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);

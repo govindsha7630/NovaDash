@@ -6,6 +6,7 @@ import { Link } from "react-router-dom"
 import { useTaskModalStore } from "@/store/taskModalStore"
 import {
     capitalize,
+    createSlug,
     formatDate,
     recentTaskTagColor,
     truncate,
@@ -85,7 +86,7 @@ export function TodoCard({ todo, view }: TodoCardProps) {
 
                 {/* Title — fix: break-words prevents overflow */}
                 <Link
-                    to={`/todos/${todo.$id}`}
+                    to={`/todos/${createSlug(todo.title,todo.$id)}`}
                     className={`text-sm font-semibold leading-snug break-words
                                 word-break overflow-wrap-anywhere
                                 hover:text-violet-400 transition-colors pr-1

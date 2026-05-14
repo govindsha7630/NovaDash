@@ -14,7 +14,6 @@ import { toast } from "sonner";
 
 // ─── Schema ────────────────────────────────────────────────────────────────
 
-
 // ✅ Remove ALL .default() from schema — put defaults in useForm instead
 const subtaskSchema = z.object({
   title: z.string().min(1),
@@ -59,7 +58,7 @@ const PRIORITIES = [
 export function CreateTaskModal() {
   const { isOpen, editData, closeModal } = useTaskModalStore();
   const createTodo = useCreateTodo();
-  const updateTodo = useUpdateTodo()
+  const updateTodo = useUpdateTodo();
   const overlayRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -92,28 +91,25 @@ export function CreateTaskModal() {
   // ── Reset on open ───────────────────────────────────────────────────────
   useEffect(() => {
     if (isOpen) {
+      // ✅ Parse subtasks from JSON string back to array
+      const parsedSubtasks = (() => {
+        try {
+          return editData?.subtasks ? JSON.parse(editData.subtasks) : [];
+        } catch {
+          return [];
+        }
+      })();
 
-        // ✅ Parse subtasks from JSON string back to array
-        const parsedSubtasks = (() => {
-            try {
-                return editData?.subtasks
-                    ? JSON.parse(editData.subtasks)
-                    : []
-            } catch {
-                return []
-            }
-        })()
-
-        reset({
-            title: editData?.title ?? "",
-            description: editData?.description ?? "",
-            priority: editData?.priority ?? "medium",
-            dueDate: editData?.dueDate ?? "",
-            tags: editData?.tags?.join(", ") ?? "",
-            subtasks: parsedSubtasks,   // ✅ now populated from editData
-        })
+      reset({
+        title: editData?.title ?? "",
+        description: editData?.description ?? "",
+        priority: editData?.priority ?? "medium",
+        dueDate: editData?.dueDate ?? "",
+        tags: editData?.tags?.join(", ") ?? "",
+        subtasks: parsedSubtasks, // ✅ now populated from editData
+      });
     }
-}, [isOpen, editData, reset])
+  }, [isOpen, editData, reset]);
 
   // ── Escape key ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -143,52 +139,61 @@ export function CreateTaskModal() {
   };
 
   // ── Submit ──────────────────────────────────────────────────────────────
- const onSubmit = async (data: TaskFormData) => {
+  const onSubmit = async (data: TaskFormData) => {
+    // const tags = data.tags
+    //     ? data.tags.split(",").map((t) => t.trim()).filter(Boolean)
+    //     : []
     const tags = data.tags
-        ? data.tags.split(",").map((t) => t.trim()).filter(Boolean)
-        : []
+      ? [
+          ...new Set(
+            data.tags
+              .split(",")
+              .map((t) => t.trim())
+              .filter(Boolean),
+          ),
+        ]
+      : [];
 
-    const subtasksJson = data.subtasks.length > 0
-        ? JSON.stringify(data.subtasks)
-        : undefined
+    const subtasksJson =
+      data.subtasks.length > 0 ? JSON.stringify(data.subtasks) : undefined;
 
     const payload = {
-        title: data.title,
-        description: data.description,
-        priority: data.priority,
-        dueDate: data.dueDate || undefined,
-        tags,
-        subtasks: subtasksJson,
-    }
+      title: data.title,
+      description: data.description,
+      priority: data.priority,
+      dueDate: data.dueDate || undefined,
+      tags,
+      subtasks: subtasksJson,
+    };
 
     // ✅ Edit mode — update existing todo
     if (editData) {
-        updateTodo.mutate(
-            { id: editData.$id!, data: payload },
-            {
-                onSuccess: () => {
-                    closeModal()
-                    reset()
-                },
-                onError: (err) => {
-                    toast.error(err.message)
-                },
-            }
-        )
-        return
+      updateTodo.mutate(
+        { id: editData.$id!, data: payload },
+        {
+          onSuccess: () => {
+            closeModal();
+            reset();
+          },
+          onError: (err) => {
+            toast.error(err.message);
+          },
+        },
+      );
+      return;
     }
 
     // ✅ Create mode — create new todo
     createTodo.mutate(payload, {
-        onSuccess: () => {
-            closeModal()
-            reset()
-        },
-        onError: (err) => {
-            toast.error(err.message)
-        },
-    })
-}
+      onSuccess: () => {
+        closeModal();
+        reset();
+      },
+      onError: (err) => {
+        toast.error(err.message);
+      },
+    });
+  };
 
   return createPortal(
     <AnimatePresence>
@@ -441,15 +446,20 @@ export function CreateTaskModal() {
                 <Button
                   type="submit"
                   // disabled={isSubmitting || createTodo.isPending}
-                  disabled={isSubmitting || createTodo.isPending || updateTodo.isPending}
+                  disabled={
+                    isSubmitting || createTodo.isPending || updateTodo.isPending
+                  }
                   className="bg-gradient-to-r from-violet-600 to-cyan-500
                                                hover:from-violet-500 hover:to-cyan-400
                                                text-white border-0 min-w-[110px]"
                 >
                   {createTodo.isPending || updateTodo.isPending
-    ? editData ? "Saving..." : "Creating..."
-    : editData ? "Save Changes" : "Create Task"
-}
+                    ? editData
+                      ? "Saving..."
+                      : "Creating..."
+                    : editData
+                      ? "Save Changes"
+                      : "Create Task"}
                 </Button>
               </div>
             </form>

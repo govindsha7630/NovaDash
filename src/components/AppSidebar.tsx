@@ -13,6 +13,7 @@ import {
   Sparkles,
   Filter,
   PanelLeftClose,
+  Calendar,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
@@ -337,85 +338,64 @@ function AppSidebar() {
             active={startsWith("/todos")}
             onIconClick={() => navigate("/todos")}
           >
+            {/* Replace the completed and pending SubItems */}
+
+            {/* ✅ All Todos — clears all filters */}
             <SubItem
               to="/todos"
               icon={<ListTodo size={13} />}
               label="All Todos"
-              active={isActive("/todos")}
+              active={isActive("/todos") && !location.search}
             />
 
-            {/* priority mini-section */}
-            <div className="px-2 py-1.5 pb-1">
-              <div className="flex items-center gap-1.25 text-xs font-semibold uppercase tracking-wider text-[var(--sidebar-icon-muted)] mb-1">
-                <Filter size={10} /> Priority
-              </div>
-              {[
-                { label: "High Priority", color: "#ef4444", value: "high" },
-                { label: "Medium Priority", color: "#f59e0b", value: "medium" },
-                { label: "Low Priority", color: "#10b981", value: "low" },
-                { label: "By Date", color: "#22d3ee", value: "date" },
-              ].map((f) => {
-                const isActivePriority =
-                  (f.value === "date" && location.search === "?filter=date") ||
-                  (f.value !== "date" &&
-                    location.search === `?priority=${f.value}`);
+            {/* ✅ Priority filters — unchanged, already correct */}
+            {[
+              { label: "High Priority", color: "#ef4444", value: "high" },
+              { label: "Medium Priority", color: "#f59e0b", value: "medium" },
+              { label: "Low Priority", color: "#10b981", value: "low" },
+            ].map((f) => (
+              <SubItem
+                key={f.value}
+                to={`/todos?priority=${f.value}`}
+                label={f.label}
+                active={location.search === `?priority=${f.value}`}
+                icon={
+                  <span
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ background: f.color }}
+                  />
+                }
+              />
+            ))}
 
-                return (
-                  <Link
-                    key={f.value}
-                    to={
-                      f.value === "date"
-                        ? "/todos?filter=date"
-                        : `/todos?priority=${f.value}`
-                    }
-                    className={`
-                      flex items-center gap-1.75 py-1.25 px-2 rounded text-xs no-underline transition-all duration-150
-                      ${
-                        isActivePriority
-                          ? "bg-[var(--sidebar-bg-hover)] font-semibold"
-                          : "font-normal"
-                      }
-                    `}
-                    style={{
-                      color: isActivePriority
-                        ? "var(--sidebar-fg)"
-                        : "var(--sidebar-icon-muted)",
-                    }}
-                  >
-                    <span
-                      className={`w-2 h-2 rounded-full flex-shrink-0 transition-transform duration-150 ${
-                        isActivePriority ? "scale-125" : "scale-100"
-                      }`}
-                      style={{
-                        background: f.color,
-                        boxShadow: isActivePriority
-                          ? `0 0 8px ${f.color}40`
-                          : "none",
-                      }}
-                    />
-                    {f.label}
-                  </Link>
-                );
-              })}
-            </div>
-
+            {/* ✅ Date filter */}
             <SubItem
-              to="/todos/completed"
+              to="/todos?filter=date"
+              icon={<Calendar size={13} />}
+              label="By Today"
+              active={location.search === "?filter=date"}
+            />
+
+            {/* ✅ Completed — now uses ?status= */}
+            <SubItem
+              to="/todos?status=completed"
               icon={<CheckCheck size={13} />}
               label="Completed"
-              active={isActive("/todos/completed")}
+              active={location.search === "?status=completed"}
             />
+
+            {/* ✅ Pending — now uses ?status= */}
             <SubItem
-              to="/todos/pending"
+              to="/todos?status=active"
               icon={<Clock size={13} />}
               label="Pending"
-              active={isActive("/todos/pending")}
+              active={location.search === "?status=active"}
             />
-            {/* <SubItem to="/todos/create" icon={<Plus size={13} />} label="Create Todo" active={isActive("/todos/create")} accent="#a78bfa" /> */}
+
+            {/* ✅ Create Todo — opens modal */}
             <SubItem
               icon={<Plus size={13} />}
-              // to="/todos/create"
-              label="Create Todo/Task"
+              label="Create Todo"
               active={false}
               accent="#a78bfa"
               onClick={() => openModal()}

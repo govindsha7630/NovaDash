@@ -7,7 +7,7 @@ import type { Article } from "@/types";
 // Import from API layer — NOT from Appwrite directly
 
 import {
-  fetchArticle,
+  fetchArticles,
   createArticle,
   updateArticle,
   deleteArticle,
@@ -21,14 +21,14 @@ export function useArticles() {
 
   return useQuery({
     queryKey: ARTICLE_KEY,
-    queryFn: () => fetchArticle(user!.$id),
+    queryFn: () => fetchArticles(user!.$id),
     enabled: !!user,
     staleTime: 1000 * 60 * 5,
   });
 }
 
 // CREATE
-export function useArticleTodo() {
+export function useCreateArticle() {
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
 
