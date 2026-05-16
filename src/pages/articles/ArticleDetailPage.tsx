@@ -8,6 +8,8 @@ import "@/styles/tiptap.css";
 import { Button } from "@/components/ui/button";
 import { useUpdateArticle } from "@/hooks/useArticle";
 import { toast } from "sonner";
+import { getFileUrl } from "@/appwrite/storage";
+import { ArrowLeft } from "lucide-react";
 
 function ArticleDetailPage() {
   const { slugwithid } = useParams<{ slugwithid: string }>();
@@ -71,6 +73,17 @@ function ArticleDetailPage() {
   <div className="h-full p-4 space-y-4 overflow-y-auto">
     {/* Action buttons */}
     <div className="flex items-center justify-between">
+       <Button
+        variant="ghost"
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-muted-foreground
+                    hover:text-foreground"
+      >
+        <ArrowLeft size={16} />
+        Back
+      </Button>
+      <div className="flex items-center gap-4 justify-between ">
+
       <Button
         disabled={updateArticle.isPending}
         variant="outline"
@@ -89,6 +102,9 @@ function ArticleDetailPage() {
             ? "Send to Archive"
             : "Publish Article"}
       </Button>
+
+      </div>
+
     </div>
 
     {/* Cover image */}
@@ -96,7 +112,7 @@ function ArticleDetailPage() {
       {article.coverImage ? (
         <img
           className="w-full h-[200px] md:h-[300px] lg:h-[400px] rounded-2xl object-cover"
-          src={article.coverImage}
+          src={article.coverImage ? getFileUrl  (article.coverImage) : undefined}
           alt={article.title}
         />
       ) : (

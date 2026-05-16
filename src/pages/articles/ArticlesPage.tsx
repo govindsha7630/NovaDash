@@ -1,143 +1,248 @@
+import { getFileUrl } from "@/appwrite/storage";
 import { Button } from "@/components/ui/button";
 import { createSlug, timeAgo, truncate } from "@/components/utils/miniUtils";
 import { useArticles } from "@/hooks/useArticle";
-import {
-  Link,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { Plus, FileText } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 const FILTERS = [
-  { label: "All", key: null, value: null },
+  { label: "All",       key: null,     value: null },
   { label: "Published", key: "status", value: "published" },
-  { label: "Draft", key: "status", value: "draft" },
-  { label: "Archived", key: "status", value: "archived" },
+  { label: "Draft",     key: "status", value: "draft" },
+  { label: "Archived",  key: "status", value: "archived" },
 ];
+
+const STATUS_STYLES: Record<string, string> = {
+  published: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+  draft:     "bg-amber-500/10  text-amber-400  border-amber-500/30",
+  archived:  "bg-muted         text-muted-foreground border-border",
+};
 
 function ArticlesPage() {
   const { data: articles, isLoading } = useArticles();
-  // console.log(articles, isLoading);
   const [searchParams] = useSearchParams();
-
   const navigate = useNavigate();
-  const statusParam = searchParams.getAll("status");
 
-  const clearFilter = () => {
-    navigate("/articles");
-  };
+  const statusParam = searchParams.getAll("status");
 
   const updateQuery = (updater: (params: URLSearchParams) => void) => {
     const params = new URLSearchParams(searchParams);
-    console.log(params.toString());
     updater(params);
-
     const query = params.toString();
-    // console.log("doff", params.toString(), query);
-
     navigate(`/articles${query ? `?${query}` : ""}`, { replace: true });
   };
 
   const updateFilter = (key: string | null, value: string | null) => {
-    if (!key) {
-      clearFilter();
-      return;
-    }
-
+    if (!key) { navigate("/articles"); return; }
     updateQuery((params) => {
       const values = new Set(params.getAll(key));
-
-      if (values.has(value!)) {
-        values.delete(value!);
-      } else {
-        values.add(value!);
-      }
-
-      // Must delete first then re-append — URLSearchParams
-      // doesn't have a "replace all" method for multi-value keys
+      values.has(value!) ? values.delete(value!) : values.add(value!);
       params.delete(key);
       values.forEach((v) => params.append(key, v));
-
       params.delete("page");
     });
+  };
+
+  const isFilterActive = (key: string | null, value: string | null) => {
+    if (!key) return statusParam.length === 0;
+    return statusParam.includes(value!);
   };
 
   const filteredArticles = (articles ?? []).filter((article) => {
     if (statusParam.length > 0 && !statusParam.includes(article.status))
       return false;
-    // if (statusParam === "archived" && article.status !== "archived")
-    // return false;
-    // if (statusParam === "draft" && article.status !== "draft") return false;
-
     return true;
   });
 
-  // console.log("statusparam", statusParam, "==");
-
-  // console.log(filteredArticles.map((art) => art.status));
   return (
-    <div className="h-full p-4 space-y-4 overflow-y-auto">
-      <div className="font-bold text-3xl">
-        My Articles
-        <p className="text-xs font-medium text-muted-foreground">
-          Manage and publish your architectural thoughts
-        </p>
-      </div>
-      {/* BUTTON Section */}
-      <div className="flex gap-2 items-center justify-between ">
-        <div className="flex gap-2 items-center justify-start">
-          {FILTERS.map((filter) => (
-            <Button
-              key={filter.label}
-              onClick={() => updateFilter(filter.key, filter.value)}
-              variant="outline"
-              size="sm"
-              className="hover:text-accent rounded-4xl"
-            >
-              {filter.label}
-            </Button>
-          ))}
-        </div>
+    <div className="h-full overflow-y-auto p-4 space-y-6">
+
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <Button className="px-4 py-6" variant="gradient">
-            <Link to={"/articles/create"}>+ New Article</Link>
-          </Button>
+          <h1 className="text-2xl font-bold text-foreground">My Articles</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {filteredArticles.length} article{filteredArticles.length !== 1 ? "s" : ""}
+          </p>
         </div>
+        <Button
+          variant="gradient"
+          className="gap-2"
+          onClick={() => navigate("/articles/create")}
+        >
+          <Plus size={16} />
+          New Article
+        </Button>
       </div>
 
-      {/* CARDS  */}
-      <div className=" grid grid-cols-5 gap-4 ">
-        {(filteredArticles ?? []).map((article) => (
-          <div className=" " key={article.$id}>
-            <div className="border-2 h-40  rounded-t-2xl">
-              <img src={article.coverImage || null!} alt="cover Image" />
-            </div>
-            <div className="p-4 bg-[#0D121E] rounded-b-3xl">
-              <div className="font-bold mb-1">
-                <Link
-                  to={`/articles/${createSlug(article.title, article.$id)}`}
-                >
-                  {truncate(article.title, 50)}
-                </Link>
-              </div>
-
-              <div className="text-xs text-muted-foreground">
-                {truncate(article.content, 70)}
-              </div>
-              <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground mt-2">
-                <span className="bg-accent/10 p-1 rounded-3xl text-accent border-2 border-accent">
-                  {timeAgo(article.$updatedAt)}
-                </span>
-                <span
-                  className={`p-1  rounded-3xl  text-yellow-400 bg-yellow-200/5 border-2 border-yellow-400 `}
-                >
-                  {article.status}
-                </span>
-              </div>
-            </div>
-          </div>
+      {/* Filters */}
+      <div className="flex gap-2 flex-wrap">
+        {FILTERS.map((filter) => (
+          <button
+            key={filter.label}
+            onClick={() => updateFilter(filter.key, filter.value)}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium
+                        border transition-all duration-150
+                        ${isFilterActive(filter.key, filter.value)
+                          ? "bg-violet-600/20 border-violet-500 text-violet-400"
+                          : "bg-muted border-transparent text-muted-foreground hover:text-foreground"
+                        }`}
+          >
+            {filter.label}
+          </button>
         ))}
       </div>
+
+      {/* Loading */}
+      {isLoading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-card border border-border
+                                    rounded-2xl h-72 animate-pulse" />
+          ))}
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!isLoading && filteredArticles.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="w-16 h-16 bg-muted rounded-full flex
+                          items-center justify-center mb-4">
+            <FileText size={24} className="text-muted-foreground" />
+          </div>
+          <h3 className="text-base font-semibold text-foreground mb-1">
+            No articles yet
+          </h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Write your first article to get started
+          </p>
+          <Button
+            variant="gradient"
+            onClick={() => navigate("/articles/create")}
+          >
+            <Plus size={16} className="mr-2" />
+            New Article
+          </Button>
+        </div>
+      )}
+
+      {/* Cards grid */}
+      {!isLoading && filteredArticles.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredArticles.map((article) => (
+            <ArticleCard key={article.$id} article={article} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
+
+// ── Article Card ─────────────────────────────────────────────
+function ArticleCard({ article }: { article: any }) {
+  const plainText = article.content?.replace(/<[^>]*>/g, "") ?? "";
+  const coverUrl = article.coverImage
+    ? getFileUrl(article.coverImage)
+    : null;
+
+  return (
+    <Link
+      to={`/articles/${createSlug(article.title, article.$id)}`}
+      className="group flex flex-col bg-card border border-border
+                 rounded-2xl overflow-hidden
+                 hover:border-violet-500/40 hover:shadow-lg
+                 hover:shadow-violet-500/5
+                 transition-all duration-200"
+    >
+      {/* Cover image */}
+      <div className="relative h-44 flex-shrink-0 overflow-hidden">
+        {coverUrl ? (
+          <img
+            src={coverUrl}
+            alt={article.title}
+            className="w-full h-full object-cover
+                       group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br
+                          from-violet-900/60 to-cyan-900/40
+                          flex items-center justify-center">
+            <FileText size={32} className="text-violet-400/50" />
+          </div>
+        )}
+
+        {/* Category badge — overlaid on image */}
+        {article.category && (
+          <span className="absolute top-3 left-3
+                           bg-black/60 backdrop-blur-sm
+                           text-white text-[11px] font-medium
+                           px-2.5 py-1 rounded-full border border-white/10">
+            {article.category}
+          </span>
+        )}
+
+        {/* Status badge — overlaid on image */}
+        <span className={`absolute top-3 right-3
+                          text-[11px] font-medium px-2.5 py-1
+                          rounded-full border backdrop-blur-sm
+                          ${STATUS_STYLES[article.status] ?? STATUS_STYLES.draft}`}>
+          {article.status}
+        </span>
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-col flex-1 p-4 gap-2">
+
+        {/* Title */}
+        <h3 className="font-semibold text-foreground leading-snug
+                       group-hover:text-violet-400 transition-colors
+                       line-clamp-2">
+          {article.title || "Untitled"}
+        </h3>
+
+        {/* Excerpt */}
+        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2 flex-1">
+          {truncate(plainText, 100) || "No content yet..."}
+        </p>
+
+        {/* Tags */}
+        {article.tags?.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-1">
+            {article.tags.slice(0, 3).map((tag: string) => (
+              <span
+                key={tag}
+                className="text-[10px] px-2 py-0.5 rounded-full
+                           bg-primary/10 text-primary border border-primary/20"
+              >
+                {tag}
+              </span>
+            ))}
+            {article.tags.length > 3 && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full
+                               bg-muted text-muted-foreground">
+                +{article.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Footer — date */}
+        <div className="flex items-center justify-between
+                        pt-2 border-t border-border mt-auto">
+          <span className="text-[11px] text-muted-foreground">
+            {timeAgo(article.$updatedAt)}
+          </span>
+          <span className="text-[11px] text-muted-foreground">
+            {new Date(article.$createdAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric"
+            })}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 export default ArticlesPage;
