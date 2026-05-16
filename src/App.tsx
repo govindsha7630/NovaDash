@@ -13,7 +13,7 @@ import DashboardPage from "@/pages/dashboard/DashboardPage"
 import TodosPage from "@/pages/todos/TodosPage"
 import ArticlesPage from "@/pages/articles/ArticlesPage"
 import Pricing from "./pages/pricing/Pricing"
-import CreateArticlePage from "./pages/articles/CreateArticlePage"
+import ArticleFormPage from "./pages/articles/ArticleFormPage"
 import TodoDetailPage from "./pages/todos/TodoDetailPage"
 import ArticleDetailPage from "./pages/articles/ArticleDetailPage"
 
@@ -54,8 +54,9 @@ function App() {
 
                 <Route path="/todos/:slugwithid" element={<TodoDetailPage />} />
                 <Route path="/articles" element={<ArticlesPage />} />
+                <Route path="/articles/create" element={<ArticleFormPage />} />
+                <Route path="/articles/edit/:slugwithid" element={<ArticleFormPage />} />
                 <Route path="/articles/:slugwithid" element={<ArticleDetailPage />} />
-                <Route path="/articles/create" element={<CreateArticlePage />} />
                 <Route path="/analytics" element={<div>Analytics</div>} />
                 <Route path="/profile" element={<div>Profile</div>} />
                 <Route path="/settings" element={<div>Settings</div>} />

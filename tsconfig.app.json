@@ -31,5 +31,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "src/pages/articles/.tsx"]
 }

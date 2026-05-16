@@ -37,10 +37,6 @@ function Toggle({
       data-slot="toggle"
       className={cn(toggleVariants({ variant, size, className }))}
       {...props}
-      onMouseDown={(e) => {
-        props.onMouseDown?.(e); // run external handler first if exists
-        e.preventDefault(); // then always prevent blur
-      }}
     />
   );
 }

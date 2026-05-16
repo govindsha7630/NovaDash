@@ -1,4 +1,6 @@
-// src/pages/articles/CreateArticlePage.tsx
+// src/pages/articles/CreateArticlePage.tsx renamed to ArticleFormPage.tsx
+import { tablesDB } from "@/appwrite/config";
+import env from "@/appwrite/env";
 import { ArticleCategorySelect } from "@/components/article/ArticleCategory";
 import { useCreateArticle, useUpdateArticle } from "@/hooks/useArticle";
 import { Card } from "@/components/ui/card";
@@ -21,7 +23,7 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const articleSchema = z.object({
   title: z
@@ -39,17 +41,22 @@ const articleSchema = z.object({
 });
 type ArticleFormData = z.infer<typeof articleSchema>;
 
-function CreateArticlePage() {
-  // const [category, setCategory] = useState("");
-  const [open, setOpen] = useState(false);
+function ArticleFormPage() {
+  const { slugwithid } = useParams();
+  const isEditMode = Boolean(slugwithid);
+  const articleIdFromUrl = slugwithid?.split("-").at(-1);
+  const [editorContent, setEditorContent] = useState<string>("");
+
+  const [open, setOpen] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState<string | undefined>(undefined);
   const [tags, setTags] = useState<string[]>([]);
-  // const [tags, setTags] = useState<string[]>(["Design", "Future", "Web3"]);
   const [tagInput, setTagInput] = useState("");
   const [articleId, setArticleId] = useState<string | null>(null);
+
   const createArticle = useCreateArticle();
   const updateArticle = useUpdateArticle();
+
   const navigate = useNavigate();
   const {
     register,
@@ -70,7 +77,7 @@ function CreateArticlePage() {
       status: "draft",
       isPrivate: false,
       tags: [],
-      category: "normal",
+      category: "",
     },
   });
 
@@ -116,6 +123,45 @@ function CreateArticlePage() {
   }, [tags, setValue]);
 
   const currentTitle = watch("title");
+
+  useEffect(() => {
+    if (!isEditMode || !articleIdFromUrl) return;
+
+    const fetchArticle = async () => {
+      try {
+        const row = await tablesDB.getRow({
+          databaseId: env.appwriteDatabaseId,
+          tableId: env.appwriteCollectionArticles,
+          rowId: articleIdFromUrl,
+        });
+
+        setArticleId(row.$id);
+
+        setValue("title", row.title || "");
+        // setValue("content", row.content || "");
+        setEditorContent(row.content);
+        setValue("coverImage", row.coverImage || "");
+        setValue("category", row.category || "");
+        setValue("isPrivate", row.isPrivate || false);
+        setValue("tags", row.tags || []);
+
+        setTags(row.tags || []);
+
+        if (row.publishAt) {
+          const publishDate = new Date(row.publishAt);
+
+          setDate(publishDate);
+
+          setTime(format(publishDate, "HH:mm"));
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load article");
+      }
+    };
+
+    fetchArticle();
+  }, [isEditMode, articleIdFromUrl, setValue]);
 
   const saveDraft = () => {
     const title = getValues("title");
@@ -242,7 +288,10 @@ function CreateArticlePage() {
         </div>
 
         <div className="flex-1 min-h-0 overflow-hidden bg-card ">
-          <Tiptap onChange={(content) => setValue("content", content)} />
+          <Tiptap
+            content={editorContent}
+            onChange={(content) => setValue("content", content)}
+          />
         </div>
 
         {/* Buttons — always at bottom, never scrolls */}
@@ -259,7 +308,7 @@ function CreateArticlePage() {
           >
             {createArticle.isPending || updateArticle.isPending
               ? "Saving..."
-              : "Save Draft"}
+              :isEditMode ? "Save Changes" : "Save Draft"}
           </Button>
           <Button
             type="submit"
@@ -269,7 +318,7 @@ function CreateArticlePage() {
           >
             {createArticle.isPending || updateArticle.isPending
               ? "Publishing..."
-              : "Publish"}
+              : isEditMode ? "Update Article" : "Publish"}
           </Button>
         </div>
       </form>
@@ -340,6 +389,7 @@ function CreateArticlePage() {
                 >
                   {tag}
                   <button
+                    type="button"
                     onClick={() => removeTag(i)}
                     className="hover:text-red-400 transition-colors"
                   >
@@ -476,4 +526,4 @@ function CreateArticlePage() {
   );
 }
 
-export default CreateArticlePage;
+export default ArticleFormPage;

@@ -1,6 +1,5 @@
 // src/components/tiptap/Tiptap.tsx
 import { useEditor, EditorContent, EditorContext } from "@tiptap/react";
-import { BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
@@ -14,17 +13,15 @@ import Youtube from "@tiptap/extension-youtube";
 import { TaskList, TaskItem } from "@tiptap/extension-list";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { all, createLowlight } from "lowlight";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import EditorToolbar from "./EditorToolbar";
 import BubbleMenuBar from "./BubbleMenuBar";
 
 // ── Lowlight for syntax highlighted code blocks ─────────────────────────────
-// createLowlight(all) registers ALL languages
-// This adds syntax highlighting inside code blocks
 const lowlight = createLowlight(all);
 
 const Tiptap = ({
-  content = 'Type here...',
+  content = "Type here...",
   onChange,
 }: {
   content?: string;
@@ -32,50 +29,33 @@ const Tiptap = ({
 }) => {
   const editor = useEditor({
     extensions: [
-      // StarterKit — contains Bold, Italic, Strike, Heading,
-      // BulletList, OrderedList, Code, Blockquote, HR, History
-      // We DISABLE codeBlock from StarterKit because we use
-      // CodeBlockLowlight instead (it adds syntax highlighting)
       StarterKit.configure({
         codeBlock: false, // disabled — using CodeBlockLowlight
         link: false,
         underline: false,
       }),
 
-      // // Underline — not in StarterKit, must add separately
       Underline,
 
-      // Highlight with multicolor — allows red, yellow, violet, cyan
       Highlight.configure({ multicolor: true }),
 
-      // Subscript and Superscript — for chemical formulas etc
       Subscript,
       Superscript,
 
-      // TextAlign — adds text-align left/center/right/justify
-      // types: which node types can be aligned
       TextAlign.configure({
         types: ["heading", "paragraph"],
       }),
 
-      // Link — clickable hyperlinks
-      // openOnClick: false — clicking link in editor doesn't navigate
-      // autolink: true — automatically converts URLs to links
       Link.configure({
         openOnClick: false,
         autolink: true,
         defaultProtocol: "https",
       }),
-
-      // Image — with max width constraint
-      // We do NOT use resize plugin (it's Pro/paid)
-      // Instead we use CSS to control image size
       Image.configure({
         inline: false, // images are block level
         allowBase64: true, // allows base64 images (for local preview)
       }),
 
-      // YouTube — embeds YouTube videos by URL
       Youtube.configure({
         // width: "100%",
         width: 1280,
@@ -83,15 +63,11 @@ const Tiptap = ({
         nocookie: true, // uses youtube-nocookie.com (more private)
       }),
 
-      // TaskList + TaskItem — checkbox lists
-      // TaskItem must have nested: true to allow sub-tasks
       TaskList,
       TaskItem.configure({
         nested: true,
       }),
 
-      // CodeBlockLowlight — replaces StarterKit's codeBlock
-      // Adds syntax highlighting to code blocks
       CodeBlockLowlight.configure({
         lowlight,
       }),
@@ -106,7 +82,6 @@ const Tiptap = ({
       onChange?.(editor.getHTML());
     },
 
-    // editorProps — lets you add HTML attributes to the editor element
     editorProps: {
       attributes: {
         // This is the class Tiptap adds to the div — your CSS targets this
@@ -151,15 +126,17 @@ const Tiptap = ({
     },
   });
 
+  useEffect(() => {
+    if (!editor) return
+    if (editor.getHTML() != content) {
+      editor.commands.setContent(content);
+    }
+  }, [content, editor]);
+
   const providerValue = useMemo(() => ({ editor }), [editor]);
 
   return (
     <EditorContext.Provider value={providerValue}>
-      {/*
-                h-full — fills whatever parent gives it
-                flex-col — toolbar on top, content below
-                overflow-hidden — this container does NOT scroll
-            */}
       <div className="flex flex-col h-full overflow-hidden">
         {/* Toolbar — never scrolls */}
         {editor && (
