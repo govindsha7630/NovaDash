@@ -18,7 +18,7 @@ const STATUS_STYLES: Record<string, string> = {
   archived:  "bg-muted         text-muted-foreground border-border",
 };
 
-function ArticlesPage() {
+function ArticleListPage() {
   const { data: articles, isLoading } = useArticles();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -245,4 +245,4 @@ function ArticleCard({ article }: { article: any }) {
   );
 }
 
-export default ArticlesPage;
+export default ArticleListPage;

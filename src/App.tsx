@@ -13,7 +13,7 @@ import ForgotPassword from "@/pages/auth/ForgotPassword"
 import DashboardPage from "@/pages/dashboard/DashboardPage"
 import TodosPage from "@/pages/todos/TodosPage"
 import TodoDetailPage from "./pages/todos/TodoDetailPage"
-import ArticlesPage from "@/pages/articles/ArticlesPage"
+import ArticleListPage from "@/pages/articles/ArticlesPage"
 import ArticleFormPage from "./pages/articles/ArticleFormPage"
 import ArticleDetailPage from "./pages/articles/ArticleDetailPage"
 import Pricing from "./pages/pricing/Pricing"
@@ -51,7 +51,7 @@ function App() {
 
                 
                 <Route path="/todos/:slugwithid" element={<TodoDetailPage />} />
-                <Route path="/articles" element={<ArticlesPage />} />
+                <Route path="/articles" element={<ArticleListPage />} />
                 <Route path="/articles/create" element={<ArticleFormPage />} />
                 <Route path="/articles/edit/:slugwithid" element={<ArticleFormPage />} />
                 <Route path="/articles/:slugwithid" element={<ArticleDetailPage />} />
