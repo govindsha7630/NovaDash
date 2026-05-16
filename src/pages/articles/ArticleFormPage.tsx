@@ -1,12 +1,14 @@
-// src/pages/articles/CreateArticlePage.tsx
+// src/pages/articles/CreateArticlePage.tsx renamed to ArticleFormPage.tsx
+import { tablesDB } from "@/appwrite/config";
+import env from "@/appwrite/env";
 import { ArticleCategorySelect } from "@/components/article/ArticleCategory";
 import { useCreateArticle, useUpdateArticle } from "@/hooks/useArticle";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { generateSlug, truncate } from "@/components/utils/miniUtils";
-import { Camera, X } from "lucide-react";
+import { Camera, X, XCircle } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { format, set } from "date-fns";
 import { ChevronDownIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,7 +23,9 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { Label } from "@/components/ui/label";
+import { deleteFile, getFileUrl, uploadFile } from "@/appwrite/storage";
 
 const articleSchema = z.object({
   title: z
@@ -39,17 +43,26 @@ const articleSchema = z.object({
 });
 type ArticleFormData = z.infer<typeof articleSchema>;
 
-function CreateArticlePage() {
-  // const [category, setCategory] = useState("");
-  const [open, setOpen] = useState(false);
+function ArticleFormPage() {
+  const { slugwithid } = useParams();
+  const isEditMode = Boolean(slugwithid);
+  const articleIdFromUrl = slugwithid?.split("-").at(-1);
+  const [editorContent, setEditorContent] = useState<string>("");
+
+  const [open, setOpen] = useState<boolean>(false);
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState<string | undefined>(undefined);
   const [tags, setTags] = useState<string[]>([]);
-  // const [tags, setTags] = useState<string[]>(["Design", "Future", "Web3"]);
   const [tagInput, setTagInput] = useState("");
   const [articleId, setArticleId] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+
   const createArticle = useCreateArticle();
   const updateArticle = useUpdateArticle();
+
   const navigate = useNavigate();
   const {
     register,
@@ -70,9 +83,45 @@ function CreateArticlePage() {
       status: "draft",
       isPrivate: false,
       tags: [],
-      category: "normal",
+      category: "",
     },
   });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    // Validate image
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only image files allowed");
+      return;
+    }
+
+    // Validate size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
+
+    // Save real file
+    setCoverFile(file);
+
+    // Create preview URL
+    const localUrl = URL.createObjectURL(file);
+
+    // Save preview URL
+    setPreviewUrl(localUrl);
+    e.target.value = "";
+  };
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     // Step 1 — need both date AND time to build ISO string
@@ -117,86 +166,167 @@ function CreateArticlePage() {
 
   const currentTitle = watch("title");
 
-  const saveDraft = () => {
-    const title = getValues("title");
-    if (!title || title.length < 3) {
-      toast.error("title length should be more than 3 characters");
-      return;
-    }
+  useEffect(() => {
+    if (!isEditMode || !articleIdFromUrl) return;
 
-    const payload = {
-      title,
-      content: getValues("content"),
-      tags: getValues("tags"),
-      category: getValues("category"),
-      publishAt: getValues("publishAt"),
-      status: "draft" as const,
+    const fetchArticle = async () => {
+      try {
+        const row = await tablesDB.getRow({
+          databaseId: env.appwriteDatabaseId,
+          tableId: env.appwriteCollectionArticles,
+          rowId: articleIdFromUrl,
+        });
+
+        if (row.coverImage) setPreviewUrl(getFileUrl(row.coverImage));
+
+        setValue("coverImage", row.coverImage || "")
+        setArticleId(row.$id);
+
+        setEditorContent(row.content);
+
+        setValue("title", row.title || "");
+
+        setValue("category", row.category || "");
+        setValue("isPrivate", row.isPrivate || false);
+        setValue("tags", row.tags || []);
+
+        setTags(row.tags || []);
+
+        if (row.publishAt) {
+          const publishDate = new Date(row.publishAt);
+
+          setDate(publishDate);
+
+          setTime(format(publishDate, "HH:mm"));
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load article");
+      }
     };
-    if (articleId) {
-      updateArticle.mutate(
-        { id: articleId, data: payload },
-        {
-          onSuccess: () => {
-            toast.success("Draft updated!");
+
+    fetchArticle();
+  }, [isEditMode, articleIdFromUrl, setValue]);
+
+  const saveDraft = async () => {
+    try {
+      const title = getValues("title");
+      if (!title || title.length < 3) {
+        toast.error("Title must be at least 3 characters");
+        return;
+      }
+
+      // Start with existing file ID from form (empty string if none)
+      let coverImageId = getValues("coverImage");
+
+      if (coverFile) {
+        // Upload new file first — confirm it works before deleting old
+        const uploaded = await uploadFile(coverFile);
+
+        // Only delete old file if one existed
+        if (coverImageId) {
+          try {
+            await deleteFile(coverImageId);
+          } catch {
+            // Non-critical — log and continue, don't block save
+            console.warn("Old cover image could not be deleted");
+          }
+        }
+
+        coverImageId = uploaded.$id;
+        setValue("coverImage", coverImageId);
+        setCoverFile(null); // clear so re-saving doesn't re-upload same file
+      }
+
+      const payload = {
+        title,
+        content: getValues("content"),
+        tags: getValues("tags"),
+        category: getValues("category"),
+        coverImage: coverImageId,
+        publishAt: getValues("publishAt"),
+        status: "draft" as const,
+      };
+
+      if (articleId) {
+        updateArticle.mutate(
+          { id: articleId, data: payload },
+          {
+            onSuccess: () => toast.success("Draft updated!"),
+            onError: (err) => toast.error(err.message),
           },
-          onError: (err) => {
-            toast.error(err.message);
+        );
+      } else {
+        createArticle.mutate(payload, {
+          onSuccess: (result) => {
+            setArticleId(result.$id);
+            toast.success("Draft saved!");
           },
-        },
-      );
-    } else {
-      createArticle.mutate(payload, {
-        onSuccess: (result) => {
-          console.log(result);
-          setArticleId(result.$id);
-          toast.success("Draft saved!");
-        },
-        onError: (err) => {
-          toast.error(err.message);
-        },
-      });
+          onError: (err) => toast.error(err.message),
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to save draft");
     }
   };
 
   const onSubmit = async (data: ArticleFormData) => {
-    console.log(data);
-    const payload = {
-      title: data.title,
-      content: data.content,
-      category: data.category,
-      publishAt: data.publishAt,
-      isPrivate: data.isPrivate,
-      coverImage: data.coverImage,
-      tags: data.tags,
-      // excerpt: data.excerpt,
-      status: "published" as const,
-    };
+    try {
+      let coverImageId = data.coverImage;
 
-    if (articleId) {
-      updateArticle.mutate(
-        { id: articleId, data: payload },
-        {
+      if (coverFile) {
+        const uploaded = await uploadFile(coverFile);
+
+        if (coverImageId) {
+          try {
+            await deleteFile(coverImageId);
+          } catch {
+            console.warn("Old cover image could not be deleted");
+          }
+        }
+
+        coverImageId = uploaded.$id;
+        setCoverFile(null);
+      }
+
+      const payload = {
+        title: data.title,
+        content: data.content,
+        category: data.category,
+        publishAt: data.publishAt,
+        isPrivate: data.isPrivate,
+        coverImage: coverImageId,
+        tags: data.tags,
+        status: "published" as const,
+      };
+
+      if (articleId) {
+        updateArticle.mutate(
+          { id: articleId, data: payload },
+          {
+            onSuccess: () => {
+              toast.success("Article updated!");
+              navigate("/articles");
+            },
+            onError: (err) => toast.error(err.message),
+          },
+        );
+      } else {
+        createArticle.mutate(payload, {
           onSuccess: () => {
-            toast.success("Article Updated!");
+            toast.success("Article published!");
             navigate("/articles");
           },
-          onError: (err) => {
-            toast.error(err.message);
-          },
-        },
-      );
-    } else {
-      createArticle.mutate(payload, {
-        onSuccess: () => {
-          toast.success("Article Published!");
-          navigate("/articles");
-        },
-        onError: (err) => {
-          toast.error(err.message);
-        },
-      });
+          onError: (err) => toast.error(err.message),
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to publish article");
     }
   };
+
   // -----------------------------------------------------------
 
   return (
@@ -206,24 +336,13 @@ function CreateArticlePage() {
           */
     <div className="h-full overflow-hidden flex gap-4 p-4">
       {/* LEFT — editor column */}
-      {/*
-                  flex-1 — takes remaining width
-                  flex-col — stack toolbar + content + buttons
-                  h-full — fills full available height
-                  overflow-hidden — column doesn't scroll
-                  min-w-0 — prevents flex overflow
-              */}
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex-1 flex flex-col h-full overflow-hidden
                     rounded-xl border border-border  min-w-0"
       >
         {/* Tiptap fills all space — toolbar inside is sticky */}
-        {/*
-                      flex-1 — grow to fill column
-                      min-h-0 — allow shrinking
-                      overflow-hidden — Tiptap controls scroll internally
-                  */}
 
         {/* Title input — above editor */}
         <div className="flex-shrink-0 px-4 pt-4">
@@ -242,7 +361,10 @@ function CreateArticlePage() {
         </div>
 
         <div className="flex-1 min-h-0 overflow-hidden bg-card ">
-          <Tiptap onChange={(content) => setValue("content", content)} />
+          <Tiptap
+            content={editorContent}
+            onChange={(content) => setValue("content", content)}
+          />
         </div>
 
         {/* Buttons — always at bottom, never scrolls */}
@@ -259,8 +381,11 @@ function CreateArticlePage() {
           >
             {createArticle.isPending || updateArticle.isPending
               ? "Saving..."
-              : "Save Draft"}
+              : isEditMode
+                ? "Save Changes"
+                : "Save Draft"}
           </Button>
+
           <Button
             type="submit"
             disabled={createArticle.isPending || updateArticle.isPending}
@@ -269,7 +394,9 @@ function CreateArticlePage() {
           >
             {createArticle.isPending || updateArticle.isPending
               ? "Publishing..."
-              : "Publish"}
+              : isEditMode
+                ? "Update Article"
+                : "Publish"}
           </Button>
         </div>
       </form>
@@ -282,7 +409,7 @@ function CreateArticlePage() {
       >
         {/* ✅ Sidebar cards scroll independently */}
         <div
-          className="flex-1 overflow-y-auto space-y-3
+          className="flex-1 overflow-y-auto space-y-4 px-1 py-1
                                   pr-1
                                   [&::-webkit-scrollbar]:w-1
                                   [&::-webkit-scrollbar-thumb]:bg-border
@@ -290,42 +417,76 @@ function CreateArticlePage() {
         >
           {/* Cover Image */}
           <Card className="rounded-xl p-4">
-            <span
-              className="block text-xs font-semibold
-                                          text-muted-foreground uppercase
-                                          tracking-wider mb-2"
-            >
-              Cover Image
-            </span>
-            <div
-              className="relative group cursor-pointer
-                                          border-2 border-dashed border-border
-                                          rounded-xl aspect-video flex flex-col
-                                          items-center justify-center gap-2
-                                          hover:border-violet-500/50
-                                          transition-colors overflow-hidden"
-            >
-              <div
-                className="relative z-10 flex flex-col
-                                              items-center text-center px-4"
+            <div className="flex items-center justify-between">
+              <span
+                className="block text-xs font-semibold
+                              text-muted-foreground uppercase
+                              tracking-wider"
               >
-                <Camera size={24} className="text-muted-foreground mb-1" />
-                <p className="text-sm font-medium text-foreground">
-                  Upload Cover
-                </p>
-                <p className="text-[11px] text-muted-foreground mt-1">
-                  Recommended: 1200×630px
-                </p>
-              </div>
+                Cover Image
+              </span>
+
+              {previewUrl && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreviewUrl("");
+                    setCoverFile(null);
+                    setValue("coverImage", "");
+                  }}
+                >
+                  <XCircle color="#7C5CFC" size={18} />
+                </button>
+              )}
+            </div>
+
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="relative group cursor-pointer
+                          border-2 border-dashed border-border
+                          rounded-xl aspect-video flex flex-col
+                          items-center justify-center gap-2
+                          hover:border-violet-500/50
+                          transition-colors overflow-hidden"
+            >
+              {previewUrl ? (
+                <img
+                  src={previewUrl}
+                  className="w-full h-full object-center object-cover"
+                  alt=""
+                />
+              ) : (
+                <div
+                  className="relative z-10 flex flex-col
+                              items-center text-center px-4"
+                >
+                  <Camera size={24} className="text-muted-foreground mb-1" />
+                  <p className="text-sm font-medium text-foreground">
+                    Upload Cover
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    Recommended: 1200×630px
+                  </p>
+                </div>
+              )}
             </div>
           </Card>
 
+          {/* Upload Cover Image here */}
+
+          <Input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+          />
           {/* Tags */}
           <Card className="rounded-xl p-4">
             <span
               className="block text-xs font-semibold
-                                          text-muted-foreground uppercase
-                                          tracking-wider mb-2"
+                        text-muted-foreground uppercase
+                        tracking-wider mb-2"
             >
               Tags
             </span>
@@ -340,6 +501,7 @@ function CreateArticlePage() {
                 >
                   {tag}
                   <button
+                    type="button"
                     onClick={() => removeTag(i)}
                     className="hover:text-red-400 transition-colors"
                   >
@@ -356,7 +518,7 @@ function CreateArticlePage() {
               className="text-xs h-8"
             />
             {/* Category */}
-            <div className="mt-3">
+            <div className="mt-2">
               <span
                 className="block text-xs font-semibold
                                               text-muted-foreground uppercase
@@ -408,7 +570,7 @@ function CreateArticlePage() {
           </Card>
 
           {/* Settings — Private + Schedule */}
-          <Card className="rounded-xl p-4 space-y-4">
+          <Card className="rounded-xl p-4 space-y-2">
             {/* Private toggle */}
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-foreground">
@@ -476,4 +638,4 @@ function CreateArticlePage() {
   );
 }
 
-export default CreateArticlePage;
+export default ArticleFormPage;

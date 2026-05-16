@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    require('@tailwindcss/line-clamp')
   ],
   resolve: {
     alias: {

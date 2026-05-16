@@ -9,13 +9,14 @@ import AppShell from "@/components/layout/AppShell"
 import LoginPage from "@/pages/auth/LoginPage"
 import SignupPage from "@/pages/auth/SignupPage"
 import ForgotPassword from "@/pages/auth/ForgotPassword"
+
 import DashboardPage from "@/pages/dashboard/DashboardPage"
 import TodosPage from "@/pages/todos/TodosPage"
-import ArticlesPage from "@/pages/articles/ArticlesPage"
-import Pricing from "./pages/pricing/Pricing"
-import CreateArticlePage from "./pages/articles/CreateArticlePage"
 import TodoDetailPage from "./pages/todos/TodoDetailPage"
+import ArticlesPage from "@/pages/articles/ArticlesPage"
+import ArticleFormPage from "./pages/articles/ArticleFormPage"
 import ArticleDetailPage from "./pages/articles/ArticleDetailPage"
+import Pricing from "./pages/pricing/Pricing"
 
 function App() {
     const setUser = useAuthStore((state) => state.setUser)
@@ -48,14 +49,12 @@ function App() {
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/todos" element={<TodosPage />} />
 
-                {/* ✅ Static route BEFORE dynamic — or it never matches */}
-                {/* ✅ No more /todos/completed or /todos/pending routes */}
-                {/* ✅ These are now ?status=completed and ?status=active */}
-
+                
                 <Route path="/todos/:slugwithid" element={<TodoDetailPage />} />
                 <Route path="/articles" element={<ArticlesPage />} />
+                <Route path="/articles/create" element={<ArticleFormPage />} />
+                <Route path="/articles/edit/:slugwithid" element={<ArticleFormPage />} />
                 <Route path="/articles/:slugwithid" element={<ArticleDetailPage />} />
-                <Route path="/articles/create" element={<CreateArticlePage />} />
                 <Route path="/analytics" element={<div>Analytics</div>} />
                 <Route path="/profile" element={<div>Profile</div>} />
                 <Route path="/settings" element={<div>Settings</div>} />
