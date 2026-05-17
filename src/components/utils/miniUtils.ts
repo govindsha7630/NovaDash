@@ -67,13 +67,18 @@ function timeAgo(date?: string): string {
 
 //utils/priority Classname
 function recentTaskTagColor(priority: string) {
-  if (priority === "high") {
-    return "bg-[rgba(255,86,86,0.12)] p-1 rounded-sm text-red-400 text-xs ";
-  } else if (priority === "medium") {
-    return "bg-cyan-700/20 p-1 rounded-sm text-accent text-xs";
-  } else {
-    return "bg-amber-600/20 p-1 rounded-sm  text-amber-400 text-xs";
-  }
+  const p = priority?.toLowerCase();
+
+  const styles: Record<string, string> = {
+    high:
+      "inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2.5 py-0.5 text-xs font-semibold text-rose-700 shadow-sm shadow-rose-500/5 transition-colors dark:border-rose-400/20 dark:bg-rose-500/15 dark:text-rose-300",
+    medium:
+      "inline-flex items-center rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-700 shadow-sm shadow-cyan-500/5 transition-colors dark:border-cyan-400/20 dark:bg-cyan-500/15 dark:text-cyan-300",
+    low:
+      "inline-flex items-center rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-700 shadow-sm shadow-amber-500/5 transition-colors dark:border-amber-400/20 dark:bg-amber-500/15 dark:text-amber-300",
+  };
+
+  return styles[p] ?? styles.low;
 }
 
 // utils/string.js

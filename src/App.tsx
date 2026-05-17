@@ -44,7 +44,7 @@ function App() {
 
             {/* Protected routes */}
             <Route element={
-                <ProtectedRoute requireAuth={true}><AppShell /></ProtectedRoute>
+                <ProtectedRoute requireAuth={false}><AppShell /></ProtectedRoute>
             }>
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/todos" element={<TodosPage />} />
