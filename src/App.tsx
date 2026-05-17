@@ -3,20 +3,27 @@ import { useEffect } from "react"
 import { getCurrentUser } from "@/appwrite/auth"
 import { useAuthStore } from "@/store/authStore"
 
-import ProtectedRoute from "@/components/layout/ProtectedRoute"
 import AppShell from "@/components/layout/AppShell"
+import ProtectedRoute from "@/components/layout/ProtectedRoute"
 
 import LoginPage from "@/pages/auth/LoginPage"
 import SignupPage from "@/pages/auth/SignupPage"
 import ForgotPassword from "@/pages/auth/ForgotPassword"
 
 import DashboardPage from "@/pages/dashboard/DashboardPage"
+import Pricing from "./pages/pricing/Pricing"
+
 import TodosPage from "@/pages/todos/TodosPage"
 import TodoDetailPage from "./pages/todos/TodoDetailPage"
+
 import ArticleListPage from "@/pages/articles/ArticlesPage"
 import ArticleFormPage from "./pages/articles/ArticleFormPage"
 import ArticleDetailPage from "./pages/articles/ArticleDetailPage"
-import Pricing from "./pages/pricing/Pricing"
+import Setting from "./pages/settings/Setting"
+import Profile from "./pages/profile/Profile"
+import Analytics from "./pages/analytics/Analytics"
+
+
 
 function App() {
     const setUser = useAuthStore((state) => state.setUser)
@@ -55,9 +62,9 @@ function App() {
                 <Route path="/articles/create" element={<ArticleFormPage />} />
                 <Route path="/articles/edit/:slugwithid" element={<ArticleFormPage />} />
                 <Route path="/articles/:slugwithid" element={<ArticleDetailPage />} />
-                <Route path="/analytics" element={<div>Analytics</div>} />
-                <Route path="/profile" element={<div>Profile</div>} />
-                <Route path="/settings" element={<div>Settings</div>} />
+                <Route path="/analytics" element={<Analytics/>} />
+                <Route path="/profile" element={<Profile/>} />
+                <Route path="/settings" element={<Setting/>} />
                 <Route path="/pricing" element={<Pricing />} />
             </Route>
 
