@@ -22,7 +22,7 @@ import {
   Legend,
 } from "recharts";
 import { useMemo } from "react";
-import { getArticleAnalytics } from "@/hooks/useAnalytics";
+import { getArticleAnalytics, getTasksOverTime } from "@/hooks/useAnalytics";
 
 function AnalyticsPage() {
   const { isLoading, data: todos } = useTodos();
@@ -47,28 +47,11 @@ function AnalyticsPage() {
 
   // ------------------------------------------------
 
-  const tasksOverTime = useMemo(() => {
-    // Phase 1 — build buckets
-    const buckets: { day: string; dateKey: string; tasks: number }[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
-      buckets.push({
-        day: date.toLocaleDateString("en-US", { weekday: "short" }),
-        dateKey: date.toLocaleDateString("en-CA"),
-        tasks: 0,
-      });
-    }
-
-    // Phase 2 — fill buckets
-    todos?.forEach((t) => {
-      const creAt = new Date(t.$createdAt).toLocaleDateString("en-CA");
-      const bucket = buckets.find((b) => b.dateKey === creAt);
-      if (bucket) bucket.tasks++;
-    });
-
-    // Phase 3 — strip dateKey
-    return buckets.map(({ dateKey, ...rest }) => rest);
-  }, [todos]); // only recomputes when todos changes
+   // only recomputes when todos changes
+    const tasksOverTime = useMemo(
+    () => (todos ? getTasksOverTime(todos) : []),
+    [todos], // ← only recomputes when articles array changes
+  );
 
   console.log(tasksOverTime);
   // ------------------------------------------------
