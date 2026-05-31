@@ -19,9 +19,10 @@ import TodoDetailPage from "./pages/todos/TodoDetailPage"
 import ArticleListPage from "@/pages/articles/ArticlesPage"
 import ArticleFormPage from "./pages/articles/ArticleFormPage"
 import ArticleDetailPage from "./pages/articles/ArticleDetailPage"
+
 import Setting from "./pages/settings/Setting"
 import Profile from "./pages/profile/Profile"
-import Analytics from "./pages/analytics/Analytics"
+import AnalyticsPage from "./pages/analytics/AnalyticsPage"
 
 
 
@@ -62,7 +63,7 @@ function App() {
                 <Route path="/articles/create" element={<ArticleFormPage />} />
                 <Route path="/articles/edit/:slugwithid" element={<ArticleFormPage />} />
                 <Route path="/articles/:slugwithid" element={<ArticleDetailPage />} />
-                <Route path="/analytics" element={<Analytics/>} />
+                <Route path="/analytics" element={<AnalyticsPage/>} />
                 <Route path="/profile" element={<Profile/>} />
                 <Route path="/settings" element={<Setting/>} />
                 <Route path="/pricing" element={<Pricing />} />
