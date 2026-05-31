@@ -13,6 +13,8 @@
 /* ===== LIGHT MODE ===== */
 :root {
   --background: #F8F9FF;
+  --background-muted: #ececec;
+
   --foreground: #0D0F1A;
 
   --card: #FFFFFF;
@@ -22,6 +24,7 @@
   --popover-foreground: #0D0F1A;
 
   --primary: #7C5CFC;
+  --primary33:#312562fc;
   --primary-muted: #CABEFF;
 
   --primary-foreground: #ffffff;
@@ -85,6 +88,7 @@
 /* ===== DARK MODE ===== */
 .dark {
   --background: #080C14;
+  --background-muted: #0f1421;
   --foreground: #EDF2FF;
 
   --card: #0F1421;
@@ -157,6 +161,7 @@
   --font-mono: ui-monospace, Consolas, monospace;
 
   --color-background: var(--background);
+  --color-background-muted: var(--background-muted);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
