@@ -1,5 +1,5 @@
-import { useArticles } from "@/hooks/useArticle";
-import { useTodos } from "@/hooks/useTodos";
+import type { Payload } from "recharts/types/component/DefaultTooltipContent";
+import type { TooltipProps } from "recharts";
 import StatCard from "../dashboard/StatCard";
 import {
   AlertCircle,
@@ -20,53 +20,34 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  RadialBar,
+  RadialBarChart,
+  PieChart,
+  Pie,
+  LineChart,
+  Line,
 } from "recharts";
-import { useMemo } from "react";
-import { getArticleAnalytics, getTasksOverTime } from "@/hooks/useAnalytics";
+
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 function AnalyticsPage() {
-  const { isLoading, data: todos } = useTodos();
-  const { data: articles } = useArticles();
-  // console.log(todos);
-  console.log(articles);
-
-  const publishedArtiCount = articles?.filter(
-    (t) => t.status === "published",
-  ).length;
-
-  const overdueTodosCount = todos?.filter(
-    (t) => t.dueDate && !t.completed && new Date(t.dueDate) < new Date(),
-  ).length;
-
-  const highPriorityCount = todos?.filter((t) => t.priority === "high").length;
-
-  const completedCount = todos?.filter((t) => t.completed === true).length ?? 0;
-  const total = todos?.length ?? 0;
-  const rate =
-    total === 0 ? 0 : Number(((completedCount / total) * 100).toFixed(1));
-
+  const {
+    rate,
+    highPriorityCount,
+    publishedArtiCount,
+    overdueTodosCount,
+    tasksOverTime,
+    articleAnalytics,
+    isLoading,
+  } = useAnalytics();
   // ------------------------------------------------
-
-   // only recomputes when todos changes
-    const tasksOverTime = useMemo(
-    () => (todos ? getTasksOverTime(todos) : []),
-    [todos], // ← only recomputes when articles array changes
-  );
-
-  console.log(tasksOverTime);
-  // ------------------------------------------------
-
-  const articleAnalytics = useMemo(
-    () => (articles ? getArticleAnalytics(articles, "week") : []),
-    [articles], // ← only recomputes when articles array changes
-  );
-  console.log(articleAnalytics);
+  // console.log(articleAnalytics);
   // ------------------------------------------------
 
   return (
-    <div className="px-4 py-6 space-y-6 h-full overflow-y-auto ">
+    <div className="px-4 py-6 space-y-6 h-full overflow-y-auto">
       {/* Heading and Date Filter Section */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex flex-col justify-start">
           <span className="text-2xl">Performace Analytics</span>
           <span className="text-sm text-muted-foreground">
@@ -74,7 +55,7 @@ function AnalyticsPage() {
           </span>
         </div>
         {/* Date Filter Section  */}
-        <div className="bg-background-muted text-muted-foreground rounded-xl flex items-center gap-8 h-12 py-2 px-4">
+        <div className="bg-background-muted text-muted-foreground rounded-xl flex items-center gap-4 sm:gap-8 h-12 py-2 px-4 w-full md:w-auto overflow-x-auto whitespace-nowrap">
           <button>Today</button>
           <button>Weekly</button>
           <button>Last 30 Days</button>
@@ -86,7 +67,7 @@ function AnalyticsPage() {
       </div>
 
       {/* Stats Card  */}
-      <div className="flex items-center justify-between gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-8">
         <StatCard
           icon={
             <CircleCheckBig
@@ -145,10 +126,10 @@ function AnalyticsPage() {
       </div>
 
       {/* Todo And Article Card */}
-      <div className="flex items-center justify-between gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
         <Card className="p-4 flex-1">
           <div className="flex items-center justify-between">
-            <div className="flex flex-col  justify-start">
+            <div className="flex flex-col justify-start">
               <span className="text-xl font-bold">Tasks Over Time</span>
               <span className="text-xs text-muted-foreground">
                 Productivity Throughout
@@ -160,14 +141,14 @@ function AnalyticsPage() {
             </span>
           </div>
 
-          <div className="h-60 ">
+          <div className="h-60 mt-4">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={tasksOverTime}
                 margin={{ top: 5, right: 0, left: 20, bottom: 0 }}
               >
                 <XAxis dataKey="day" />
-                <Tooltip />
+                <Tooltip content={<TaskTooltip />} />
                 <Area
                   type="monotone"
                   dataKey="tasks"
@@ -179,9 +160,10 @@ function AnalyticsPage() {
             </ResponsiveContainer>
           </div>
         </Card>
+
         <Card className="p-4 flex-1">
           <div className="flex items-center justify-between">
-            <div className="flex flex-col  justify-start">
+            <div className="flex flex-col justify-start">
               <span className="text-xl font-bold">Content Creation</span>
               <span className="text-xs text-muted-foreground">
                 Articles published per month
@@ -193,75 +175,140 @@ function AnalyticsPage() {
             </span>
           </div>
 
-          <div className="h-60">
-            {/* Content Creation — needs its own data */}
+          <div className="h-60 mt-4">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={articleAnalytics}
                 margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
               >
-                {/* <XAxis dataKey="month" /> */}
-                <XAxis dataKey="label" />
-                <Tooltip />
-                <Bar dataKey="articles" fill="#22D3EE" radius={[4, 4, 0, 0]} />
-                {/* <Bar dataKey="tasks" fill="#22D3EE" radius={[4, 4, 0, 0]} /> */}
+                   
+                <XAxis dataKey="label"  width={12} />
+                <Tooltip
+                  content={<ArticleTooltip />}
+                  cursor={{ fill: "transparent" }}
+                />
+                <Bar dataKey="articles" fill="#22D3EE"  radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </Card>
       </div>
 
-      <div className="flex  justify-between items-stretch gap-8">
-        <Card className="flex-1 p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 items-stretch gap-4 md:gap-8">
+        <Card className="flex-1 p-4 justify-between">
           <div className="text-lg text-muted-foreground font-semibold">
             Todos By Priority
           </div>
-          <div className="border-2">chart</div>
-
+          <div className="h-60">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart
+                data={articleAnalytics}
+                margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
+              >
+                <Tooltip
+                  content={<ArticleTooltip />}
+                  cursor={{ fill: "transparent" }}
+                />
+                <Pie dataKey="articles" fill="#22D3EE" />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
           <div>
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 justify-start text-xs text-[#d7d5c2]">
-                {" "}
-                <div className="w-2 h-2 bg-rose-500  rounded-full " />
+                <div className="w-2 h-2 bg-rose-500 rounded-full " />
                 High Priority
-              </span>{" "}
+              </span>
               <span className="text-muted-foreground">60%</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 justify-start text-xs text-[#d7d5c2]">
-                {" "}
-                <div className="w-2 h-2 bg-cyan-500  rounded-full " />
+                <div className="w-2 h-2 bg-cyan-500 rounded-full " />
                 Medium Priority
-              </span>{" "}
+              </span>
               <span className="text-muted-foreground">60%</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 justify-start text-xs text-[#d7d5c2]">
-                {" "}
                 <div className="w-2 h-2 bg-amber-500 rounded-full " />
                 Low Priority
-              </span>{" "}
+              </span>
               <span className="text-muted-foreground">60%</span>
             </div>
           </div>
         </Card>
-        <Card className="flex-1 p-4">
+        
+        <Card className="flex-1 p-4 justify-between">
           <div className="text-lg text-muted-foreground font-semibold">
             Completion Trend
           </div>
-          <div className="border-2">Linechart</div>
+          
+          {/* 1. Increased height from h-80 to h-[420px] to give 12 months room */}
+          <div className="h-96 mt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                layout="vertical"
+                data={articleAnalytics}
+                margin={{ top: 20, right: 20, left: 0, bottom: 5 }}
+              >
+                <XAxis type="number" />
+                
+                {/* 2. Added interval={0} to stop Recharts from hiding labels */}
+                {/* Added width={60} to ensure the text doesn't get clipped */}
+                <YAxis 
+                  dataKey="label" 
+                  type="category" 
+                  interval={0} 
+                  width={60} 
+                  tick={{ fontSize: 12, fill: 'currentColor' }}
+                  className="text-muted-foreground"
+                />
+                
+                <Tooltip
+                  content={<ArticleTooltip />}
+                  cursor={{ fill: "transparent" }}
+                />
+                <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                
+                <Bar
+                  dataKey="articles"
+                  fill="#22D3EE"
+                  radius={[0, 4, 4, 0]}
+                  barSize={16} // Shrunk slightly to fit 12 bars comfortably
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </Card>
-        <Card className="flex-1 p-4">
+        
+        <Card className="flex-1 p-4 justify-between">
           <div className="text-lg text-muted-foreground font-semibold">
             Top Article
           </div>
-          <div className="border-2">Horizontal BarChart</div>
+          <div className="h-60">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={articleAnalytics}
+                margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
+              >
+                <Legend />
+                <Tooltip
+                  content={<ArticleTooltip />}
+                  cursor={{ fill: "transparent" }}
+                />
+                <Line dataKey="articles" fill="#22D3EE" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </Card>
-        <Card className="flex-1 p-4">
+        
+        <Card className="flex-1 p-4 justify-between">
           <div className="text-lg text-muted-foreground font-semibold">
             Tags Usage
           </div>
-          <div className="border-2">Horizontal BarChart</div>
+          <div className="border-2 mt-4 p-4 text-center rounded-md text-muted-foreground">
+            Horizontal BarChart
+          </div>
         </Card>
       </div>
     </div>
@@ -269,3 +316,52 @@ function AnalyticsPage() {
 }
 
 export default AnalyticsPage;
+
+// --- FIXED TOOLTIP TYPES ---
+
+interface TaskDataPoint {
+  day: string;
+  tasks: number;
+}
+
+interface ArticleDataPoint {
+  label: string;
+  articles: number;
+}
+
+// Creating a custom interface to bypass the Recharts generic issue
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: any[];
+  label?: string;
+}
+
+const TaskTooltip = ({ active, payload }: CustomTooltipProps) => {
+  if (!active || !payload?.length) return null;
+  const item = payload[0];
+  const data = item.payload as TaskDataPoint;
+
+  return (
+    <div className="bg-background border border-border rounded-lg px-3 py-2 shadow-md text-sm">
+      <p className="font-semibold text-foreground">{data.day}</p>
+      <p className="text-primary">
+        Tasks: <span className="font-bold">{item.value}</span>
+      </p>
+    </div>
+  );
+};
+
+const ArticleTooltip = ({ active, payload }: CustomTooltipProps) => {
+  if (!active || !payload?.length) return null;
+  const item = payload[0];
+  const data = item.payload as ArticleDataPoint;
+
+  return (
+    <div className="bg-background border border-border rounded-lg px-3 py-2 shadow-md text-sm">
+      <p className="font-semibold text-foreground">{data.label}</p>
+      <p className="text-accent">
+        Articles: <span className="font-bold">{item.value}</span>
+      </p>
+    </div>
+  );
+};
