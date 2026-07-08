@@ -1,5 +1,3 @@
-import type { Payload } from "recharts/types/component/DefaultTooltipContent";
-import type { TooltipProps } from "recharts";
 import StatCard from "../dashboard/StatCard";
 import {
   AlertCircle,
@@ -40,6 +38,7 @@ function AnalyticsPage() {
     articleAnalytics,
     isLoading,
   } = useAnalytics();
+
   // ------------------------------------------------
   // console.log(articleAnalytics);
   // ------------------------------------------------
@@ -181,13 +180,12 @@ function AnalyticsPage() {
                 data={articleAnalytics}
                 margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
               >
-                   
-                <XAxis dataKey="label"  width={12} />
+                <XAxis dataKey="label" width={12} />
                 <Tooltip
                   content={<ArticleTooltip />}
                   cursor={{ fill: "transparent" }}
                 />
-                <Bar dataKey="articles" fill="#22D3EE"  radius={[4, 4, 0, 0]} />
+                <Bar dataKey="articles" fill="#22D3EE" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -237,12 +235,12 @@ function AnalyticsPage() {
             </div>
           </div>
         </Card>
-        
+
         <Card className="flex-1 p-4 justify-between">
           <div className="text-lg text-muted-foreground font-semibold">
             Completion Trend
           </div>
-          
+
           {/* 1. Increased height from h-80 to h-[420px] to give 12 months room */}
           <div className="h-96 mt-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -252,24 +250,24 @@ function AnalyticsPage() {
                 margin={{ top: 20, right: 20, left: 0, bottom: 5 }}
               >
                 <XAxis type="number" />
-                
+
                 {/* 2. Added interval={0} to stop Recharts from hiding labels */}
                 {/* Added width={60} to ensure the text doesn't get clipped */}
-                <YAxis 
-                  dataKey="label" 
-                  type="category" 
-                  interval={0} 
-                  width={60} 
-                  tick={{ fontSize: 12, fill: 'currentColor' }}
+                <YAxis
+                  dataKey="label"
+                  type="category"
+                  interval={0}
+                  width={60}
+                  tick={{ fontSize: 12, fill: "currentColor" }}
                   className="text-muted-foreground"
                 />
-                
+
                 <Tooltip
                   content={<ArticleTooltip />}
                   cursor={{ fill: "transparent" }}
                 />
-                <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                
+                <Legend wrapperStyle={{ paddingTop: "10px" }} />
+
                 <Bar
                   dataKey="articles"
                   fill="#22D3EE"
@@ -280,7 +278,7 @@ function AnalyticsPage() {
             </ResponsiveContainer>
           </div>
         </Card>
-        
+
         <Card className="flex-1 p-4 justify-between">
           <div className="text-lg text-muted-foreground font-semibold">
             Top Article
@@ -301,7 +299,7 @@ function AnalyticsPage() {
             </ResponsiveContainer>
           </div>
         </Card>
-        
+
         <Card className="flex-1 p-4 justify-between">
           <div className="text-lg text-muted-foreground font-semibold">
             Tags Usage
